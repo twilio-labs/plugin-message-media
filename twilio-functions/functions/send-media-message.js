@@ -1,5 +1,4 @@
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
-const Twilio = require('twilio');
 
 exports.handler = TokenValidator(async function (context, event, callback) {
   const response = new Twilio.Response();
@@ -10,10 +9,11 @@ exports.handler = TokenValidator(async function (context, event, callback) {
 
   const { to, mediaUrl } = event;
 
-  const client = Twilio(context.ACCOUNT_SID, context.AUTH_TOKEN);
+  const client = context.getTwilioClient();
+
   try {
     const result = await client.messages.create({
-      from: context.TWILIO_WHATSAPP_NUMBER,
+      from: `whatsapp:${context.TWILIO_WHATSAPP_NUMBER}`,
       to,
       mediaUrl
     });
@@ -21,7 +21,7 @@ exports.handler = TokenValidator(async function (context, event, callback) {
     response.setBody(JSON.stringify({ success: true }));
     callback(null, response);
   } catch (error) {
-    console.log('error creating message:', error);
+    console.error('error creating message:', error);
     response.setBody(JSON.stringify({ success: false, error }));
     callback(response, null);
   }

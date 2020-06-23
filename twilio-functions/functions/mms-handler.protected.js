@@ -73,7 +73,7 @@ exports.handler = function(context, event, callback) {
         }
       })
       .then(function(result) {
-        CHANNEL_SID = result.unique_name;
+        CHANNEL_SID = result.unique_name.split('.')[0];
 
         var options = {
           method: "POST",
