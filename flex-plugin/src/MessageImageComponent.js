@@ -73,6 +73,7 @@ class MessageImageComponent extends Component {
           element = this.renderImage(media);
           break;
         case 'audio/mpeg':
+        case 'audio/ogg':
           element = this.renderAudioPlayer(media, mediaType);
           break;
         case 'application/pdf':

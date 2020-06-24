@@ -7,8 +7,9 @@
     "start": "twilio-run --env"
   },
   "dependencies": {
+    "twilio": "3.29.2",
     "twilio-flex-token-validator": "1.5.3",
-    "twilio": "3.29.2"
+    "verror": "^1.10.0"
   },
   "devDependencies": {
     "twilio-run": "^2.0.0"
