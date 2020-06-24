@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "twilio-flex-token-validator": "1.5.3",
-    "request-promise": "4.2.5",
     "twilio": "3.29.2"
   },
   "devDependencies": {

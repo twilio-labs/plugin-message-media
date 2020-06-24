@@ -1,19 +1,6 @@
-exports.handler = function(context, event, callback) {
-  const rp = require("request-promise");
-
-  const base64Token = Buffer.from(
-    `${context.ACCOUNT_SID}:${context.AUTH_TOKEN}`
-  ).toString("base64");
-
-  const HTTP_BASIC_AUTH = `https://${context.ACCOUNT_SID}:${
-    context.AUTH_TOKEN
-  }@api.twilio.com/2010-04-01/Accounts`;
-
-  const inboundResourceUrlEndpoint = event.inboundResourceUrl.replace(
-    "https://api.twilio.com/2010-04-01/Accounts",
-    HTTP_BASIC_AUTH
-  );
-
+exports.handler = async function(context, event, callback) {
+  const client = context.getTwilioClient();
+  
   let SESSION_SID;
   let CHANNEL_SID;
   let mediaType;
@@ -21,78 +8,57 @@ exports.handler = function(context, event, callback) {
   let MESSAGE_SID;
 
   if (event.inboundResourceSid.includes("MM")) {
+    console.log(event);
     SESSION_SID = event.interactionSessionSid;
     MESSAGE_SID = event.outboundResourceSid;
-    rp({
-      method: "GET",
-      uri: inboundResourceUrlEndpoint,
-      json: true
-    })
-      .then(function(result) {
-        // Check if the message has any media
-        console.log("result is " + result);
 
-        if (result.subresource_uris && result.subresource_uris.media) {
-          const subResourceMediaURL = `https://${context.ACCOUNT_SID}:${
-            context.AUTH_TOKEN
-          }@api.twilio.com${result.subresource_uris.media}`;
+    const inboundResource = await client.messages(event.inboundResourceSid).fetch();
 
-          console.log(subResourceMediaURL);
+    // Check if the message has any media
+    console.log("resource is:");
+    console.log(inboundResource);
 
-          return rp({
-            method: "GET",
-            uri: subResourceMediaURL,
-            json: true
-          });
-        } else {
-          console.log("this happened");
-        }
-      })
-      .then(function(result) {
-        if (result.media_list) {
-          mediaType = result.media_list[0].content_type;
-          console.log('media content type:', mediaType);
-          mediaURL =
-            "https://api.twilio.com" +
-            result.media_list[0].uri.replace(".json", "");
+    if (inboundResource.subresourceUris && inboundResource.subresourceUris.media) {
+      const subResourceMediaURL = `https://${context.ACCOUNT_SID}:${
+        context.AUTH_TOKEN
+      }@api.twilio.com${inboundResource.subresourceUris.media}`;
 
-          console.log("this is the media Url " + mediaURL);
+      console.log(subResourceMediaURL);
 
-          return rp({
-            method: "GET",
-            uri: `https://proxy.twilio.com/v1/Services/${
-              context.PROXY_SERVICE
-            }/Sessions/${SESSION_SID}`,
-            headers: {
-              Authorization: `Basic ${base64Token}`
-            },
-            json: true
-          });
-        } else {
-          callback(null);
-        }
-      })
-      .then(function(result) {
-        CHANNEL_SID = result.unique_name.split('.')[0];
+      const subResourcesList = await client.messages(event.inboundResourceSid)
+        .media
+        .list({ limit: 1 });
+    
+      if (subResourcesList.length) {
+        const [subResource] = subResourcesList;
+        mediaType = subResource.contentType;
+        console.log('media content type:', mediaType);
+        mediaURL =
+          "https://api.twilio.com" +
+          subResource.uri.replace(".json", "");
 
-        var options = {
-          method: "POST",
-          url: `https://chat.twilio.com/v2/Services/${
-            context.CHAT_SERVICE_SID
-          }/Channels/${CHANNEL_SID}/Messages/${MESSAGE_SID}`,
-          headers: {
-            Authorization: `Basic ${base64Token}`,
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          formData: { Attributes: `{"media": "${mediaURL}", "mediaType": "${mediaType}"}` }
-        };
-        return rp(options);
-      })
-      .then(result => {
-        console.log(result);
-        callback(null);
-      })
-      .catch(error => console.log(error));
+        console.log("this is the media Url " + mediaURL);
+
+        const session = await client.proxy.services(context.PROXY_SERVICE)
+            .sessions(SESSION_SID)
+            .fetch();
+
+        console.log(session);
+        CHANNEL_SID = session.uniqueName.split('.')[0];
+
+        const updatedChatMessage = await client.chat.services(context.CHAT_SERVICE_SID)
+           .channels(CHANNEL_SID)
+           .messages(MESSAGE_SID)
+           .update({ attributes: `{"media": "${mediaURL}", "mediaType": "${mediaType}"}` })
+        
+        console.log(updatedChatMessage);
+      }
+      
+      callback(null);
+    } else {
+      console.log("this happened");
+      callback(null);
+    }
   } else {
     console.log("not MMS");
     callback(null);

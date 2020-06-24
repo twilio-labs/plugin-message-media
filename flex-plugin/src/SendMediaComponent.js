@@ -8,7 +8,7 @@ const buttonContainerStyle = {
 }
 
 class UploadComponent extends React.Component {
-  baseFunctionUrl = `https://${this.props.manager.serviceConfiguration.serviceBaseUrl}`
+  baseFunctionUrl = `https://${this.props.manager.configuration.serviceBaseUrl}`
 
   imageUrl = 'https://images.unsplash.com/photo-1452873867668-7325bd9f4438?ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80'
 
@@ -20,7 +20,7 @@ class UploadComponent extends React.Component {
 
   sendMediaMessage = async (to, mediaUrl) => {
     const { manager } = this.props;
-    const sendMediaMessageUrl = `${this.baseFunctionUrl}/send-media-message`;
+    const sendMediaMessageUrl = `${this.baseFunctionUrl}send-media-message`;
     const body = {
       Token: manager.store.getState().flex.session.ssoTokenPayload.token,
       to,
