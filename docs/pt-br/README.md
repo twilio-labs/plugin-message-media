@@ -170,6 +170,58 @@ Na pasta `flex-plugin` na raiz desse repositório está um plugin do Flex que de
 
 ![send media buttons](screenshots/sendMediaButtons.png)
 
+## Debuggando o código no ambiente local
+
+### Rodando as Twilio Functions localmente usando o serverless toolkit
+
+Caso você tenha optado pela segunda opção para realizar o deploy das funções, você pode roda-las em um ambiente local para testar as modificações ou debugar o que está acontecendo por trás dos panos.
+
+Dentro do diretório `twilio-functions`, instale as dependências do projeto:
+
+```zsh
+$ npm i
+```
+
+Depois disso, use o Serverless Toolkit para inicializar suas funções:
+
+```
+$ twilio serverless:start
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                                                                        │
+│   Twilio functions available:                                          │
+│   ├── [protected] /mms-handler | http://localhost:3000/mms-handler     │
+│   └── /send-media-message | http://localhost:3000/send-media-message   │
+│                                                                        │
+│   Twilio assets available:                                             │
+│   ⚠ No assets found                                                    │
+│                                                                        │
+└────────────────────────────────────────────────────────────────────────┘
+
+```
+
+Para usar o `mms-handler` local no Callback URL do Proxy, você terá que usar o [ngrok](https://ngrok.com/) ou alguma ferramenta do tipo. O ngrok vai gerar uma URL que aponta para a sua máquina na porta definida ao inicializá-lo. Instale o ngrok em algum diretório da sua máquina e o execute passando os seguintes argumentos:
+
+```zsh
+$ ./ngrok http 3000
+
+ngrok by @inconshreveable                                           (Ctrl+C to quit)
+                                                                                    
+Session Status                online                                                
+Account                       Your account                                 
+Version                       2.3.35                                                
+Region                        United States (us)                                    
+Web Interface                 http://127.0.0.1:3041                                 
+Forwarding                    http://your_url.ngrok.io -> http://localhost:3000 
+Forwarding                    https://your_url.ngrok.io -> http://localhost:3000
+```
+
+Assim, uma URL será gerada para rotear conexões http para o seu localhost na porta 3000. Copie a última URL HTTPS e defina o endpoint do `mms-handler` no formato `https://your_url.ngrok.io/mms-handler` como o callback URL no [Proxy do Flex](https://www.twilio.com/console/proxy), assim como foi feito no passo de [configurar o Twilio Proxy](#Configurando-o-twilio-proxy).
+
+![proxy-callback](screenshots/proxy-callback.png)
+
+No plugin do Flex, você pode definir para chamar a função `send-media-message` no localhost modificando o arquivo `flex-plugin/public/appConfig.js`. As instruções para rodar o plugin em sua máquina estão descritas abaixo.
+
 ### Rodando o Plugin do Flex em sua própria máquina
 
 Para testar rapidamente esse plugin rodando uma instância do Flex local, primeiro você deve realizar login no [Console da Twilio](https://www.twilio.com/login). Depois, dentro da pasta `flex-plugin`, instale as dependências do projeto:
@@ -178,14 +230,14 @@ Para testar rapidamente esse plugin rodando uma instância do Flex local, primei
 $ npm i
 ```
 
-Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID** da sua conta do Flex e o `serviceBaseUrl` como o domínio das funções, sem `https://` nem barra no final:
+Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID** da sua conta do Flex e o `serviceBaseUrl` como o domínio das funções ou definindo ela como a url do ngrok caso você esteja rodando as funções localmente. A url deve ser definida sem `https://` nem barra no final:
 
 ```javascript
 // your account sid
-var accountSid = 'AC71256b327ddcd84d04e03d1f24760472';
+var accountSid = 'AC000000000000000000000000000000000';
 
 // your runtime domain
-var serviceBaseUrl = 'whatsapp-media-4042-dev.twil.io';
+var serviceBaseUrl = 'your-domain.twil.io';
 
 // set to /plugins.json for local dev
 // set to /plugins.local.build.json for testing your build
@@ -223,3 +275,5 @@ You can now view plugin-sms-media in the browser.
 Note that the development build is not optimized.
 To create a production build, use npm run build.
 ```
+
+Pronto! Agora, você pode testar suas modificações localmente.
