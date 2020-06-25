@@ -1,8 +1,6 @@
 # mms2FlexChat
 
-Permite que usuários envie media do MMS por SMS/Whatsapp e renderiza dentro da janela de chat do Flex.
-
-Você precisa que o seu chat do Flex renderize media do MMS dentro do seu Flex UI?
+Permite que usuários envie e recebia midias MMS por SMS/Whatsapp e renderiza dentro da janela de chat do Flex.
 
 # Quickstart
 
@@ -170,6 +168,55 @@ Na pasta `flex-plugin` na raiz desse repositório está um plugin do Flex que de
 
 ![send media buttons](screenshots/sendMediaButtons.png)
 
+Realizar o deploy desse plugin é bem simples: entre no diretório `flex-plugin` e instale as dependências:
+
+```zsh
+$ npm i
+```
+
+Depois disso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o único parâmetro com o dominio das funções:
+
+```javascript
+export const env = {
+  mmsFunctionsDomain: 'https://your_domain.twil.io'
+};
+```
+
+Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID**:
+
+```javascript
+// your account sid
+var accountSid = 'AC000000000000000000000000000000000';
+
+// set to /plugins.json for local dev
+// set to /plugins.local.build.json for testing your build
+// set to "" for the default live plugin loader
+var pluginServiceUrl = '/plugins.json';
+
+var appConfig = {
+  pluginService: {
+    enabled: true,
+    url: pluginServiceUrl,
+  },
+  sso: {
+    accountSid: accountSid
+  },
+  ytica: false,
+  logLevel: 'debug',
+  showSupervisorDesktopView: true,
+};
+```
+
+Por último, rode o comando `npm deploy`. Recomendo que ao rodar o comando pela primeira vez você defina o accountSid e o authToken da sua conta do flex da seguinte maneira: 
+
+```
+TWILIO_ACCOUNT_SID=AC0000000 TWILIO_AUTH_TOKEN=00000000000 npm run deploy
+```
+
+Dessa forma, caso você já tenha realizado um deploy em alguma outra conta, você tem certeza de que o deploy desse plugin em específico vai subir na conta com o SID específicado. Você não precisa especificar esses parâmetros nos próximos deploys, já que essa conta será usada por padrão ou se você tiver mais de uma conta registrada você terá que selecionar em qual delas você quer realizar o deploy antes de fazer o processo.
+
+Agora é só você abrir o seu painel de [administrador do Flex](https://flex.twilio.com/admin) e testar se está tudo funcionando!
+
 ## Debuggando o código no ambiente local
 
 ### Rodando as Twilio Functions localmente usando o serverless toolkit
@@ -230,14 +277,19 @@ Para testar rapidamente esse plugin rodando uma instância do Flex local, primei
 $ npm i
 ```
 
-Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID** da sua conta do Flex e o `serviceBaseUrl` como o domínio das funções ou definindo ela como a url do ngrok caso você esteja rodando as funções localmente. A url deve ser definida sem `https://` nem barra no final:
+Caso você ainda não tenha feito isso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o único parâmetro com o dominio das funções (caso você esteja rodando ela local, você pode especificar o domínio como localhost ou a URL do ngrok):
+
+```javascript
+export const env = {
+  mmsFunctionsDomain: 'https://your_domain.twil.io'
+};
+```
+
+Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID**:
 
 ```javascript
 // your account sid
 var accountSid = 'AC000000000000000000000000000000000';
-
-// your runtime domain
-var serviceBaseUrl = 'your-domain.twil.io';
 
 // set to /plugins.json for local dev
 // set to /plugins.local.build.json for testing your build
@@ -245,14 +297,12 @@ var serviceBaseUrl = 'your-domain.twil.io';
 var pluginServiceUrl = '/plugins.json';
 
 var appConfig = {
-  serviceBaseUrl: serviceBaseUrl + '/',
   pluginService: {
     enabled: true,
     url: pluginServiceUrl,
   },
   sso: {
-    accountSid: accountSid,
-    tokenizerUrl: serviceBaseUrl + '/tokenizer',
+    accountSid: accountSid
   },
   ytica: false,
   logLevel: 'debug',
@@ -260,7 +310,9 @@ var appConfig = {
 };
 ```
 
-Finalmente, rode o comando `npm start`. Isso deve iniciar um servidor na porta 8080 com sua instância local do plugin e abrir o seu browser padrão conectado ao flex.
+Finalmente, rode o comando `PORT=8080 npm start`. Isso deve iniciar um servidor na porta 8080 com sua instância local do plugin e abrir o seu browser padrão conectado ao flex. 
+
+> A porta 8080 foi específicada para evitar conflito com as Functions se as mesmas estiverem rodando em um servidor local.
 
 ```
 $ npm start
