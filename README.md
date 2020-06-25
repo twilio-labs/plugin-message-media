@@ -4,6 +4,13 @@ Allows end users to send in MMS media over SMS and render within Flex Chat windo
 
 Looking for your Flex Chat Window render MMS media into your Flex Chat UI?
 
+# Documentation
+
+Below, you can see the original documentation for this repository. There is also a detailed one in Portuguese, and sooner it will be translated to english as well.
+
+[Click here](docs/pt-br/README.md) to access the detailed documentation in Brazilian Portuguese.
+
+
 # Steps:
 
 ## Twilio Functions
