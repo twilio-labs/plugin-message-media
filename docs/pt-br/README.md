@@ -267,7 +267,7 @@ Assim, uma URL será gerada para rotear conexões http para o seu localhost na p
 
 ![proxy-callback](screenshots/proxy-callback.png)
 
-No plugin do Flex, você pode definir para chamar a função `send-media-message` no localhost modificando o arquivo `flex-plugin/public/appConfig.js`. As instruções para rodar o plugin em sua máquina estão descritas abaixo.
+No plugin do Flex, você pode definir para chamar a função `send-media-message` no localhost modificando o arquivo `flex-plugin/src/env.js`. As instruções para rodar o plugin em sua máquina estão descritas abaixo.
 
 ### Rodando o Plugin do Flex em sua própria máquina
 
