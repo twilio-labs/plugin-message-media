@@ -1,67 +1,74 @@
-import React, { Component } from "react";
-import * as Flex from "@twilio/flex-ui";
+import React, { Component } from 'react';
+import * as Flex from '@twilio/flex-ui';
 
 const imgContainerStyle = {
-  padding: "5px",
-  margin: "0px"
+  padding: '5px',
+  margin: '0px'
 };
 
 const audioPlayerStyle = {
-  width: "100%"
+  width: '100%'
 };
 
 class MessageImageComponent extends Component {
-  renderImage = (media) => {
+  renderImage = media => {
     return (
-      <img
-        src={media}
-        alt="MMS"
-        width="150px"
-        onClick={() =>
-          Flex.Actions.invokeAction("smsModalControl", {
-            url: media
-          })
-        }
-      />
+      <div
+        style={{
+          paddingLeft: 10,
+          paddingBottom: 10
+        }}
+      >
+        <img
+          src={media}
+          alt='MMS'
+          width='150px'
+          onClick={() =>
+            Flex.Actions.invokeAction('smsModalControl', {
+              url: media
+            })
+          }
+        />
+      </div>
     );
-  }
+  };
 
   renderAudioPlayer = (media, mediaType) => {
     return (
-      <React.Fragment>
+      <div style={{ padding: 5 }}>
         <audio style={audioPlayerStyle} controls>
           <source src={media} type={mediaType} />
         </audio>
-        <a href={media} target="_blank">
+        <a href={media} target='_blank'>
           Full Size Player
         </a>
-      </React.Fragment>
+      </div>
     );
-  }
+  };
 
-  renderPdfViewer = (media) => {
+  renderPdfViewer = media => {
     return (
-      <React.Fragment>
-        <iframe title='PDF Preview' src={media} width="100%" />
-        <a href={media} target="_blank">
+      <div style={{ padding: 5 }}>
+        <iframe title='PDF Preview' src={media} width='100%' />
+        <a href={media} target='_blank'>
           Full Size Document
         </a>
-      </React.Fragment>
-    )
-  }
+      </div>
+    );
+  };
 
   renderVideoPlayer = (media, mediaType) => {
     return (
-      <React.Fragment>
-        <video width="100%" controls>
+      <div style={{ padding: 5 }}>
+        <video width='100%' controls>
           <source src={media} type={mediaType} />
         </video>
-        <a href={media} target="_blank">
+        <a href={media} target='_blank'>
           Full Size Player
         </a>
-      </React.Fragment>
-    )
-  }
+      </div>
+    );
+  };
 
   render() {
     const messageAttributes = this.props.message.source.state.attributes;
@@ -73,6 +80,7 @@ class MessageImageComponent extends Component {
           element = this.renderImage(media);
           break;
         case 'audio/mpeg':
+        case 'audio/ogg':
           element = this.renderAudioPlayer(media, mediaType);
           break;
         case 'application/pdf':
@@ -84,11 +92,7 @@ class MessageImageComponent extends Component {
         default:
           element = <div />;
       }
-      return (
-        <div style={{ imgContainerStyle }}>
-          {element}
-        </div>
-      );
+      return <div style={{ imgContainerStyle }}>{element}</div>;
     }
     return <div />;
   }

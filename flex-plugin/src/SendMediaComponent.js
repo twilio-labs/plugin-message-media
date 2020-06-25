@@ -1,4 +1,5 @@
 import React from 'react';
+import { env } from './env';
 import { withTaskContext } from "@twilio/flex-ui";
 import Button from './components/Button';
 
@@ -8,11 +9,11 @@ const buttonContainerStyle = {
 }
 
 class UploadComponent extends React.Component {
-  baseFunctionUrl = `https://${this.props.manager.serviceConfiguration.runtime_domain}`
+  baseFunctionUrl = env.mmsFunctionsDomain;
 
   imageUrl = 'https://images.unsplash.com/photo-1452873867668-7325bd9f4438?ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80'
 
-  videoUrl = 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
+  videoUrl = 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_1280_10MG.mp4'
 
   pdfUrl = 'https://file-examples.com/wp-content/uploads/2017/10/file-sample_150kB.pdf'
 
