@@ -1,4 +1,5 @@
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
+const fetch = require('node-fetch');
 
 exports.handler = TokenValidator(async function (context, event, callback) {
   const response = new Twilio.Response();

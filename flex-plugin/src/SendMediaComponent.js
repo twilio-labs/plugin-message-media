@@ -1,23 +1,75 @@
 import React from 'react';
 import { env } from './env';
-import { withTaskContext } from "@twilio/flex-ui";
+import { withTaskContext } from '@twilio/flex-ui';
 import Button from './components/Button';
 
 const buttonContainerStyle = {
   display: 'flex',
   'flex-direction': 'horizontal'
-}
+};
 
 class UploadComponent extends React.Component {
   baseFunctionUrl = env.mmsFunctionsDomain;
 
-  imageUrl = 'https://images.unsplash.com/photo-1452873867668-7325bd9f4438?ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80'
+  imageUrl =
+    'https://images.unsplash.com/photo-1452873867668-7325bd9f4438?ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80';
 
-  videoUrl = 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_1280_10MG.mp4'
+  videoUrl =
+    'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_1280_10MG.mp4';
 
-  pdfUrl = 'https://file-examples.com/wp-content/uploads/2017/10/file-sample_150kB.pdf'
+  pdfUrl =
+    'https://file-examples.com/wp-content/uploads/2017/10/file-sample_150kB.pdf';
 
-  audioUrl = 'https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3'
+  audioUrl =
+    'https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
+
+  constructor(props) {
+    super(props);
+    this.inputFileRef = React.createRef();
+  }
+
+  onChange = async e => {
+    const [file = null] = Array.from(e.target.files);
+
+    if (file) {
+      try {
+        const { mediaType, mediaUrl } = await this.uploadMedia(file);
+        await this.sendMedia(mediaUrl, mediaType);
+      } catch (error) {
+        console.error('Error while sending media', error);
+        return;
+      }
+    }
+  };
+
+  uploadMedia = async file => {
+    const { manager } = this.props;
+    const mediaUploadUrl = `http://localhost:3001/upload`;
+    const formData = new FormData();
+    formData.append('media', file);
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'x-auth-token': manager.store.getState().flex.session.ssoTokenPayload
+          .token
+      },
+      body: formData
+    };
+
+    try {
+      const res = await fetch(mediaUploadUrl, options);
+
+      if (!res.ok) {
+        throw new Error(`request error: ${res.status} - ${res.statusText}`);
+      }
+
+      return await res.json();
+    } catch (error) {
+      console.error('Error while uploading the file', error);
+      return;
+    }
+  };
 
   sendMediaMessage = async (to, mediaUrl) => {
     const { manager } = this.props;
@@ -41,35 +93,47 @@ class UploadComponent extends React.Component {
     } catch (error) {
       console.error(`Error sending media message to ${to}.`, error);
     }
-
-  }
+  };
 
   sendMedia = async (mediaUrl, mediaType) => {
-    console.log('component props:', this.props);
-    const { manager, channelSid, task } = this.props;
-    let channel;
+    console.debug('component props:', this.props);
+    const { task } = this.props;
     try {
-      channel = await manager.chatClient.getChannelBySid(channelSid);
-      console.log('Retrieved channel object:', channel);
+      const channel = await this.retrieveChannel();
+      console.debug('Retrieved channel object:', channel);
+
+      const messageIndex = await this.sendDummyMessage(channel);
+      console.debug('Message sent with index', messageIndex);
+
+      const message = channel.messagesEntity.messagesByIndex.get(messageIndex);
+      const attributes = {
+        media: mediaUrl,
+        mediaType
+      };
+
+      message.updateAttributes(attributes);
+      await this.sendMediaMessage(task.attributes.name, mediaUrl);
+    } catch (error) {
+      console.error('Error while sending media', error);
+    }
+  };
+
+  retrieveChannel = async () => {
+    const { manager, channelSid } = this.props;
+
+    try {
+      return await manager.chatClient.getChannelBySid(channelSid);
     } catch (error) {
       console.error('Error getting channel by sid.', error);
-      return;
     }
-    let messageIndex;
+  };
+
+  sendDummyMessage = async (channel) => {
     try {
-      messageIndex = await channel.sendMessage('');
-      console.log('Message sent with index', messageIndex);
+      return await channel.sendMessage('');
     } catch (error) {
       console.error('Error sending message.', error);
-      return;
     }
-    const message = channel.messagesEntity.messagesByIndex.get(messageIndex);
-    const attributes = {
-      media: mediaUrl,
-      mediaType
-    };
-    message.updateAttributes(attributes);
-    this.sendMediaMessage(task.attributes.name, mediaUrl);
   }
 
   render() {
@@ -79,12 +143,60 @@ class UploadComponent extends React.Component {
     // file would get passed into the sendMedia function.
     return (
       <div style={buttonContainerStyle}>
-        <Button key="image-button" label="Send Image" sendMedia={() => { this.sendMedia(this.imageUrl, 'image/jpeg') }}/>
-        <Button key="audio-button" label="Send Audio" sendMedia={() => { this.sendMedia(this.audioUrl, 'audio/mpeg') }}/>
-        <Button key="video-button" label="Send Video" sendMedia={() => { this.sendMedia(this.videoUrl, 'video/mp4') }}/>
-        <Button key="pdf-button" label="Send PDF" sendMedia={() => { this.sendMedia(this.pdfUrl, 'application/pdf') }}/>
+        <Button
+          key='image-button'
+          label='Send Image'
+          sendMedia={() => {
+            this.sendMedia(this.imageUrl, 'image/jpeg');
+          }}
+        />
+        <Button
+          key='audio-button'
+          label='Send Audio'
+          sendMedia={() => {
+            this.sendMedia(this.audioUrl, 'audio/mpeg');
+          }}
+        />
+        <Button
+          key='video-button'
+          label='Send Video'
+          sendMedia={() => {
+            this.sendMedia(this.videoUrl, 'video/mp4');
+          }}
+        />
+        <Button
+          key='pdf-button'
+          label='Send PDF'
+          sendMedia={() => {
+            this.sendMedia(this.pdfUrl, 'application/pdf');
+          }}
+        />
+        <form>
+          <input
+            ref={this.inputFileRef}
+            accept='
+              image/jpeg,
+              image/png,
+              audio/mp3,
+              audio/ogg,
+              audio/amr,
+              video/mp4,
+              .pdf'
+            name='media'
+            onChange={this.onChange}
+            type='file'
+            hidden='true'
+          />
+          <Button
+            key='custom-button'
+            label='Send Custom'
+            sendMedia={() => {
+              this.inputFileRef.current.click();
+            }}
+          />
+        </form>
       </div>
-    )
+    );
   }
 }
 
