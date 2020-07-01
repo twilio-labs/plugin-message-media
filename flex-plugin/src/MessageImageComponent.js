@@ -77,6 +77,7 @@ class MessageImageComponent extends Component {
       let element;
       switch (mediaType) {
         case 'image/jpeg':
+        case 'image/png':
           element = this.renderImage(media);
           break;
         case 'audio/mpeg':
