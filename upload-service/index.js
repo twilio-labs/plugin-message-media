@@ -89,28 +89,31 @@ const fetchMediaDetails = async media => {
   app.use(expressLogger);
   app.use(flexAuth);
 
-  app.post('/upload', upload.single('media'), async (req, res) => {
-    const acceptedMediaTypes = [
-      'image/jpeg',
-      'image/png',
-      'audio/mp3',
-      'audio/mpeg',
-      'audio/ogg',
-      'audio/amr',
-      'video/mp4',
-      'application/pdf'
-    ];
+  const acceptedMediaTypes = [
+    'image/jpeg',
+    'image/png',
+    'audio/mp3',
+    'audio/mpeg',
+    'audio/ogg',
+    'audio/amr',
+    'video/mp4',
+    'application/pdf'
+  ];
 
+  app.post('/upload', upload.single('media'), async (req, res) => {
     const { file } = req;
+    logger.info(`Received incoming file: ${file.originalname},${file.mimetype} of size ${file.size / 1000}kb`);
 
     if (!acceptedMediaTypes.includes(file.mimetype)) {
-      console.log(file.mimetype);
+      logger.warn(`Incoming request has a invalid mimetype ${file.mimetype}`);
       return res.status(415).json({ msg: 'media not supported' });
     }
 
     try {
       const media = await uploadMediaToMCS(file);
       const mediaDetails = await fetchMediaDetails(media);
+
+      logger.debug('Media uploaded to MCS: %o. Details: %o', media, mediaDetails);
 
       const {
         sid: mediaSid,
@@ -121,6 +124,8 @@ const fetchMediaDetails = async media => {
       const {
         links: { content_direct_temporary: mediaUrl }
       } = mediaDetails;
+
+      logger.info(`File ${file.originalname} uploaded successfully`);
 
       res.json({
         dateCreated,

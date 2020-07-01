@@ -1,16 +1,16 @@
 # mms2FlexChat
 
-Permite que usuários envie e recebia midias MMS por SMS/Whatsapp e renderiza dentro da janela de chat do Flex.
+Permite que usuários enviem e recebia mídias MMS por SMS/Whatsapp e renderiza dentro da janela de chat do Flex.
 
 # Quickstart
 
 ## Twilio Functions
 
-Para permitir o envio de media MMS para o chat do flex, duas Twilio Functions são necessárias. Elas podem ser encontradas dentro da pasta `twilio-functions/functions` desse repositório. Abaixo, você pode ver uma breve descrição sobre o que cada uma delas faz:
+Para permitir o envio de mídia MMS para o chat do flex, duas Twilio Functions são necessárias. Elas podem ser encontradas dentro da pasta `twilio-functions/functions` desse repositório. Abaixo, você pode ver uma breve descrição sobre o que cada uma delas faz:
 
 1) mms-handler.protected.js: Essa Function vai ser chamada toda vez que ocorrer uma interação com o Twilio Proxy, usando o URI do Proxy Callback. Ela vai checar se um MMS existe na mensagem de SMS/Whatsapp recebida.
 
-2) send-media-message.js: Essa Function vai ser chamada pelo plugin do Flex para enviar a midia para o cliente usando a API de mensagens da Twilio. O Proxy não suporta mensagens com midia, então temos que chamar a API de mensagens diretamente por essa função para fazer um caminho alternativo.
+2) send-media-message.js: Essa Function vai ser chamada pelo plugin do Flex para enviar a mídia para o cliente usando a API de mensagens da Twilio. O Proxy não suporta mensagens com mídia, então temos que chamar a API de mensagens diretamente por essa função para fazer um caminho alternativo.
 
 Você pode realizar o upload dessas funções em sua conta da Twilio por dos métodos: realizando o upload via o [Serverless Toolkit](https://www.twilio.com/docs/labs/serverless-toolkit) ou copiando e colando o código das funções na [interface de Functions](https://www.twilio.com/console/functions/manage) no Console da Twilio.
 
@@ -109,7 +109,7 @@ Caso ele não tenha aparecido na listagem ou você tenha acabado de instalar o `
 $ twilio plugins:install @twilio-labs/plugin-serverless
 ```
 
-Dentro da psta `twilio-functions`, copie o arquivo `.env.example` e crie um arquivo `.env` propriamente dito. Preencha ele com as informações definidas no arquivo de exemplo. Cheque a descrição das variáveis de ambientes mais acima caso você precise de mais detalhes sobre elas.
+Dentro da pasta `twilio-functions`, copie o arquivo `.env.example` e crie um arquivo `.env` propriamente dito. Preencha ele com as informações definidas no arquivo de exemplo. Cheque a descrição das variáveis de ambientes mais acima caso você precise de mais detalhes sobre elas.
 
 ```
 ACCOUNT_SID=AC0000000000000000000000000000000000
@@ -146,7 +146,7 @@ Depois que o deploy for realizado com sucesso, copie e salve o link do seu domí
 
 ## Configurando o Twilio Proxy
 
-Como o Twilio Proxy não suporta mensagens com midia nativamente, é necessário monitorias essas mensagens para detectar essas mensagens com midia e só então atualizar os atributos da mensagem com o URL da midia e seu tipo. Isso é responsabilidade da função `mms-handler`, que o deploy foi realizado anteriormente.
+Como o Twilio Proxy não suporta mensagens com mídia nativamente, é necessário monitorias essas mensagens para detectar essas mensagens com mídia e só então atualizar os atributos da mensagem com o URL da mídia e seu tipo. Isso é responsabilidade da função `mms-handler`, que o deploy foi realizado anteriormente.
 
 Agora, você precisa configurar o URL do Proxy Callback para o endpoint dessa função.
 
@@ -158,9 +158,47 @@ Agora, você precisa configurar o URL do Proxy Callback para o endpoint dessa fu
 
 3) Clique no botão `Save` no final da página de configuração depois que você preencheu o `Callback URL`.
 
+## Subindo o serviço de upload
+
+Também foi adicionado nesse repositório um exemplo de micro serviço que realiza o upload de midias no [MCS do Programmable Chat](https://www.twilio.com/docs/chat/rest/media). Hoje, não é possível enviar mensagens diretamente no Flex, pois o Proxy ainda não suporta mensagens com mídia. Por isso, é necessário que essas mídias sejam armazenadas externamente antes de serem anexadas à mensagem. 
+
+O MCS do Programmable Chat permite que você hospede a mídia dentro dos servidores da Twilio. Porém, essa mídia estará disponível por 5 minutos e irá expirar após esse tempo. Quando a mensagem com o URL mídia é enviada para o WhatsApp, uma cópia dessa mídia é feita no próprio servidor deles, portanto não há risco do cliente perder o acesso à mídia enviada. Porém, o histórico do Flex será afetado e as imagens não serão exibidas depois desse período de tempo. Caso esse fator seja importante para você, considere usar uma outra solução para a hospedagem, como o S3 da Amazon.
+
+Por fim, configurar o serviço de exemplo de exemplo é bem simples. Na pasta `upload-service`, instale as dependências e crie um arquivo `.env` a partir do `.env.example`:
+
+```zsh
+npm i
+
+cp .env.example .env
+```
+
+Depois, preencha o arquivo .env com as informações necessárias. O SID do serviço do Proxy e o número do WhatsApp não serão necessários nesse serviço. O `LOG_LEVEL` e pode ser `debug`, `info` ou `error`, ou qualquer outro nível de logging do [Pino](https://github.com/pinojs/pino), mas o serviço só faz uso desses 3 níveis. Por fim, a variável `PORT` define em que porta o servidor vai rodar. No exemplo está definido na porta 3001 para evitar conflito com as Functions caso elas estejam rodando localmente:
+
+```
+ACCOUNT_SID=AC00000000000000000000000000000
+AUTH_TOKEN=00000000000000000000000000000000
+CHAT_SERVICE_SID=IS000000000000000000000000
+LOG_LEVEL=debug
+PORT=3001
+```
+
+Por fim, inicie o servidor. Você pode iniciá-lo usando o comando `npm start` ou `npm run dev`. A diferença é que o primeiro vai rodar um servidor node padrão e os logs serão exibidos como JSON sem formatação enquanto o segundo comando usa o [Nodemon](https://www.npmjs.com/package/nodemon) para detectar mudanças no código e usa o [pino-pretty](https://github.com/pinojs/pino-pretty) para formatar os logs, o que pode ser útil caso você queira realizar mudanças no serviço ou precise debugá-lo.
+
+```zsh
+# Inicia o serviço no modo de produção
+npm start 
+
+# Inicia o serviço no modo de desenvolvimento
+npm run dev
+```
+
+Vale ressaltar que esse serviço é apenas um exemplo, e não está necessariamente pronto para uso em produção.
+
+Feito isso, você pode configurar o seu plugin do Flex.
+
 ## Usando o Plugin do Flex
 
-Na pasta `flex-plugin` na raiz desse repositório está um plugin do Flex que deve ser implementado para possibilitar que a midia recebida seja exibida exibida corretamente. O plugin também traz alguns botões de demonstração para enviar midia do Flex para o destinatário. Abaixo, você pode ver algumas imagens demonstrando o funcionamento dele:
+Na pasta `flex-plugin` na raiz desse repositório está um plugin do Flex que deve ser implementado para possibilitar que a mídia recebida seja exibida exibida corretamente. O plugin também traz alguns botões de demonstração para enviar mídia do Flex para o destinatário. Abaixo, você pode ver algumas imagens demonstrando o funcionamento dele:
 
 ![image thumbnail](screenshots/thumbnail.png)
 
@@ -174,13 +212,16 @@ Realizar o deploy desse plugin é bem simples: entre no diretório `flex-plugin`
 $ npm i
 ```
 
-Depois disso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o único parâmetro com o dominio das funções:
+Depois disso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina:
 
 ```javascript
 export const env = {
-  mmsFunctionsDomain: 'https://your_domain.twil.io'
+  mmsFunctionsDomain: 'https://your_domain.twil.io',
+  uploadServiceEndpoint: 'https://your_upload_endpoint'
 };
 ```
+
+> Caso você queira realizar o deploy do plugin em sua conta, você vai precisar usar o ngrok para apontar o `uploadServiceEndpoint` para seu servidor local ou subir um servidor de testes na nuvem. Caso você não queira implementar nenhuma das duas opções, você pode ignorar esse parâmetro e testar o envio de mídia somente com os botões de exemplo com URL fixas.
 
 Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID**:
 
@@ -213,7 +254,7 @@ Por último, rode o comando `npm deploy`. Recomendo que ao rodar o comando pela 
 TWILIO_ACCOUNT_SID=AC0000000 TWILIO_AUTH_TOKEN=00000000000 npm run deploy
 ```
 
-Dessa forma, caso você já tenha realizado um deploy em alguma outra conta, você tem certeza de que o deploy desse plugin em específico vai subir na conta com o SID específicado. Você não precisa especificar esses parâmetros nos próximos deploys, já que essa conta será usada por padrão ou se você tiver mais de uma conta registrada você terá que selecionar em qual delas você quer realizar o deploy antes de fazer o processo.
+Dessa forma, caso você já tenha realizado um deploy em alguma outra conta, você tem certeza de que o deploy desse plugin em específico vai subir na conta com o SID especificado. Você não precisa especificar esses parâmetros nos próximos deploys, já que essa conta será usada por padrão ou se você tiver mais de uma conta registrada você terá que selecionar em qual delas você quer realizar o deploy antes de fazer o processo.
 
 Agora é só você abrir o seu painel de [administrador do Flex](https://flex.twilio.com/admin) e testar se está tudo funcionando!
 
@@ -221,7 +262,7 @@ Agora é só você abrir o seu painel de [administrador do Flex](https://flex.tw
 
 ### Rodando as Twilio Functions localmente usando o serverless toolkit
 
-Caso você tenha optado pela segunda opção para realizar o deploy das funções, você pode roda-las em um ambiente local para testar as modificações ou debugar o que está acontecendo por trás dos panos.
+Caso você tenha optado pela segunda opção para realizar o deploy das funções, você pode rodá-las em um ambiente local para testar as modificações ou debugar o que está acontecendo por trás dos panos.
 
 Dentro do diretório `twilio-functions`, instale as dependências do projeto:
 
@@ -277,11 +318,12 @@ Para testar rapidamente esse plugin rodando uma instância do Flex local, primei
 $ npm i
 ```
 
-Caso você ainda não tenha feito isso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o único parâmetro com o dominio das funções (caso você esteja rodando ela local, você pode especificar o domínio como localhost ou a URL do ngrok):
+Caso você ainda não tenha feito isso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina. (Caso você também esteja rodando as funções em seu ambiente local e o serviço de upload, especificar o domínio como localhost ou a URL do ngrok):
 
 ```javascript
 export const env = {
-  mmsFunctionsDomain: 'https://your_domain.twil.io'
+  mmsFunctionsDomain: 'http://localhost:3000',
+  uploadServiceEndpoint: 'http://localhost:3001'
 };
 ```
 
