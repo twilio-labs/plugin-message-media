@@ -323,7 +323,7 @@ Caso você ainda não tenha feito isso, crie um arquivo `src/env.js` com base no
 ```javascript
 export const env = {
   mmsFunctionsDomain: 'http://localhost:3000',
-  uploadServiceEndpoint: 'http://localhost:3001'
+  uploadServiceEndpoint: 'http://localhost:3001/upload'
 };
 ```
 

@@ -44,7 +44,7 @@ class UploadComponent extends React.Component {
 
   uploadMedia = async file => {
     const { manager } = this.props;
-    const mediaUploadUrl = `http://localhost:3001/upload`;
+    const mediaUploadUrl = `${env.uploadServiceEndpoint}`;
     const formData = new FormData();
     formData.append('media', file);
 
