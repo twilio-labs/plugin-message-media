@@ -196,7 +196,7 @@ Vale ressaltar que esse serviço é apenas um exemplo, e não está necessariame
 
 Feito isso, você pode configurar o seu plugin do Flex.
 
-## Usando o Plugin do Flex
+## Subindo o Plugin do Flex
 
 Na pasta `flex-plugin` na raiz desse repositório está um plugin do Flex que deve ser implementado para possibilitar que a mídia recebida seja exibida exibida corretamente. O plugin também traz alguns botões de demonstração para enviar mídia do Flex para o destinatário. Abaixo, você pode ver algumas imagens demonstrando o funcionamento dele:
 
@@ -212,16 +212,14 @@ Realizar o deploy desse plugin é bem simples: entre no diretório `flex-plugin`
 $ npm i
 ```
 
-Depois disso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina:
+Depois disso, crie um arquivo `.env.production` com base no `.env.example`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina:
 
 ```javascript
-export const env = {
-  mmsFunctionsDomain: 'https://your_domain.twil.io',
-  uploadServiceEndpoint: 'https://your_upload_endpoint'
-};
+REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
+REACT_APP_UPLOAD_SERVICE_ENDPOINT=https://your_upload_endpoint/path/to/upload
 ```
 
-> Caso você queira realizar o deploy do plugin em sua conta, você vai precisar usar o ngrok para apontar o `uploadServiceEndpoint` para seu servidor local ou subir um servidor de testes na nuvem. Caso você não queira implementar nenhuma das duas opções, você pode ignorar esse parâmetro e testar o envio de mídia somente com os botões de exemplo com URL fixas.
+> Caso você queira realizar o deploy do plugin em sua conta, você vai precisar usar o ngrok para apontar o `UPLOAD_SERVICE_ENDPOINT` para seu servidor local ou subir um servidor de testes na nuvem. Caso você não queira implementar nenhuma das duas opções, você pode ignorar esse parâmetro e testar o envio de mídia somente com os botões de exemplo com URL fixas.
 
 Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID**:
 
@@ -318,14 +316,14 @@ Para testar rapidamente esse plugin rodando uma instância do Flex local, primei
 $ npm i
 ```
 
-Caso você ainda não tenha feito isso, crie um arquivo `src/env.js` com base no `src/env.example.js`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina. (Caso você também esteja rodando as funções em seu ambiente local e o serviço de upload, especificar o domínio como localhost ou a URL do ngrok):
+Crie um arquivo `.env`, diferente do de produção, com base no `.env.example`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina. (Caso você também esteja rodando as funções em seu ambiente local e o serviço de upload, especificar o domínio como localhost ou a URL do ngrok):
 
 ```javascript
-export const env = {
-  mmsFunctionsDomain: 'http://localhost:3000',
-  uploadServiceEndpoint: 'http://localhost:3001/upload'
-};
+REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
+REACT_APP_UPLOAD_SERVICE_ENDPOINT=https://your_upload_endpoint/path/to/upload
 ```
+
+> É recomendado que você tenha o arquivo `.env` para realizar testes locais e o `.env.production` para ser usado na hora do deploy. Quando você rodar o comando `npm run deploy`, o arquivo env de produção vai ser usado no lugar do `.env` padrão.
 
 Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID**:
 

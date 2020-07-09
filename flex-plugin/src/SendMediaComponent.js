@@ -1,5 +1,4 @@
 import React from 'react';
-import { env } from './env';
 import { withTaskContext } from '@twilio/flex-ui';
 import Button from './components/Button';
 
@@ -9,7 +8,8 @@ const buttonContainerStyle = {
 };
 
 class UploadComponent extends React.Component {
-  baseFunctionUrl = env.mmsFunctionsDomain;
+  baseFunctionUrl = process.env.REACT_APP_MMS_FUNCTIONS_DOMAIN;
+  uploadEndpoint = process.env.REACT_APP_UPLOAD_SERVICE_ENDPOINT;
 
   imageUrl =
     'https://images.unsplash.com/photo-1452873867668-7325bd9f4438?ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80';
@@ -44,7 +44,6 @@ class UploadComponent extends React.Component {
 
   uploadMedia = async file => {
     const { manager } = this.props;
-    const mediaUploadUrl = `${env.uploadServiceEndpoint}`;
     const formData = new FormData();
     formData.append('media', file);
 
@@ -58,7 +57,7 @@ class UploadComponent extends React.Component {
     };
 
     try {
-      const res = await fetch(mediaUploadUrl, options);
+      const res = await fetch(this.uploadEndpoint, options);
 
       if (!res.ok) {
         throw new Error(`request error: ${res.status} - ${res.statusText}`);
