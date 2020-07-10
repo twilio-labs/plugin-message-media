@@ -33,8 +33,20 @@ class UploadComponent extends React.Component {
 
     if (file) {
       try {
-        const { mediaType, mediaUrl } = await this.uploadMedia(file);
-        await this.sendMedia(mediaUrl, mediaType);
+        const channel = await this.retrieveChannel();
+
+        channel.once('messageAdded', async (msg) => {
+          const { media } = msg;
+          if (media) {
+            const mediaUrl = await media.getContentUrl();
+            await this.sendMedia(mediaUrl, media.contentType, media.sid);
+          }
+        });
+
+        await channel.sendMessage({
+          contentType: file.type,
+          media: file
+        }); 
       } catch (error) {
         console.error('Error while sending media', error);
         return;
@@ -70,13 +82,14 @@ class UploadComponent extends React.Component {
     }
   };
 
-  sendMediaMessage = async (to, mediaUrl) => {
+  sendMediaMessage = async (to, mediaUrl, mediaSid) => {
     const { manager } = this.props;
     const sendMediaMessageUrl = `${this.baseFunctionUrl}/send-media-message`;
     const body = {
       Token: manager.store.getState().flex.session.ssoTokenPayload.token,
       to,
-      mediaUrl
+      mediaUrl,
+      mediaSid
     };
     const options = {
       method: 'POST',
@@ -94,24 +107,20 @@ class UploadComponent extends React.Component {
     }
   };
 
-  sendMedia = async (mediaUrl, mediaType) => {
+  sendMedia = async (mediaUrl, mediaType, mediaSid) => {
     console.debug('component props:', this.props);
     const { task } = this.props;
     try {
       const channel = await this.retrieveChannel();
       console.debug('Retrieved channel object:', channel);
 
-      const messageIndex = await this.sendDummyMessage(channel);
-      console.debug('Message sent with index', messageIndex);
-
-      const message = channel.messagesEntity.messagesByIndex.get(messageIndex);
       const attributes = {
         media: mediaUrl,
         mediaType
       };
 
-      message.updateAttributes(attributes);
-      await this.sendMediaMessage(task.attributes.name, mediaUrl);
+      await this.sendDummyMessage(channel, attributes);
+      await this.sendMediaMessage(task.attributes.name, mediaUrl, mediaSid);
     } catch (error) {
       console.error('Error while sending media', error);
     }
@@ -127,9 +136,9 @@ class UploadComponent extends React.Component {
     }
   };
 
-  sendDummyMessage = async (channel) => {
+  sendDummyMessage = async (channel, attributes) => {
     try {
-      return await channel.sendMessage('');
+      return await channel.sendMessage('Media', attributes);
     } catch (error) {
       console.error('Error sending message.', error);
     }
@@ -184,7 +193,7 @@ class UploadComponent extends React.Component {
             name='media'
             onChange={this.onChange}
             type='file'
-            hidden='true'
+            hidden
           />
           <Button
             key='custom-button'

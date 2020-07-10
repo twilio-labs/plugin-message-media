@@ -70,10 +70,30 @@ class MessageImageComponent extends Component {
     );
   };
 
+  async componentDidMount() {
+    const message = this.props.message.source;
+
+    if (message.media) {
+      const mediaUrl = await message.media.getContentUrl();
+      this.setState({ mediaUrl });
+    }
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      mediaUrl: ''
+    }
+  }
+
   render() {
     const messageAttributes = this.props.message.source.state.attributes;
-    const { media, mediaType } = messageAttributes;
-    if (media) {
+    const message = this.props.message.source;
+
+    if (this.state.mediaUrl) {
+      const media = this.state.mediaUrl;
+      const mediaType = message.media.contentType;
+
       let element;
       switch (mediaType) {
         case 'image/jpeg':
