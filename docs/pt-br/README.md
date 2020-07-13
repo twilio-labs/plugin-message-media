@@ -158,53 +158,15 @@ Agora, você precisa configurar o URL do Proxy Callback para o endpoint dessa fu
 
 3) Clique no botão `Save` no final da página de configuração depois que você preencheu o `Callback URL`.
 
-## Subindo o serviço de upload
-
-Também foi adicionado nesse repositório um exemplo de micro serviço que realiza o upload de midias no [MCS do Programmable Chat](https://www.twilio.com/docs/chat/rest/media). Hoje, não é possível enviar mensagens diretamente no Flex, pois o Proxy ainda não suporta mensagens com mídia. Por isso, é necessário que essas mídias sejam armazenadas externamente antes de serem anexadas à mensagem. 
-
-O MCS do Programmable Chat permite que você hospede a mídia dentro dos servidores da Twilio. Porém, essa mídia estará disponível por 5 minutos e irá expirar após esse tempo. Quando a mensagem com o URL mídia é enviada para o WhatsApp, uma cópia dessa mídia é feita no próprio servidor deles, portanto não há risco do cliente perder o acesso à mídia enviada. Porém, o histórico do Flex será afetado e as imagens não serão exibidas depois desse período de tempo. Caso esse fator seja importante para você, considere usar uma outra solução para a hospedagem, como o S3 da Amazon.
-
-Por fim, configurar o serviço de exemplo de exemplo é bem simples. Na pasta `upload-service`, instale as dependências e crie um arquivo `.env` a partir do `.env.example`:
-
-```zsh
-npm i
-
-cp .env.example .env
-```
-
-Depois, preencha o arquivo .env com as informações necessárias. O SID do serviço do Proxy e o número do WhatsApp não serão necessários nesse serviço. O `LOG_LEVEL` e pode ser `debug`, `info` ou `error`, ou qualquer outro nível de logging do [Pino](https://github.com/pinojs/pino), mas o serviço só faz uso desses 3 níveis. Por fim, a variável `PORT` define em que porta o servidor vai rodar. No exemplo está definido na porta 3001 para evitar conflito com as Functions caso elas estejam rodando localmente:
-
-```
-ACCOUNT_SID=AC00000000000000000000000000000
-AUTH_TOKEN=00000000000000000000000000000000
-CHAT_SERVICE_SID=IS000000000000000000000000
-LOG_LEVEL=debug
-PORT=3001
-```
-
-Por fim, inicie o servidor. Você pode iniciá-lo usando o comando `npm start` ou `npm run dev`. A diferença é que o primeiro vai rodar um servidor node padrão e os logs serão exibidos como JSON sem formatação enquanto o segundo comando usa o [Nodemon](https://www.npmjs.com/package/nodemon) para detectar mudanças no código e usa o [pino-pretty](https://github.com/pinojs/pino-pretty) para formatar os logs, o que pode ser útil caso você queira realizar mudanças no serviço ou precise debugá-lo.
-
-```zsh
-# Inicia o serviço no modo de produção
-npm start 
-
-# Inicia o serviço no modo de desenvolvimento
-npm run dev
-```
-
-Vale ressaltar que esse serviço é apenas um exemplo, e não está necessariamente pronto para uso em produção.
-
-Feito isso, você pode configurar o seu plugin do Flex.
-
 ## Subindo o Plugin do Flex
 
-Na pasta `flex-plugin` na raiz desse repositório está um plugin do Flex que deve ser implementado para possibilitar que a mídia recebida seja exibida exibida corretamente. O plugin também traz alguns botões de demonstração para enviar mídia do Flex para o destinatário. Abaixo, você pode ver algumas imagens demonstrando o funcionamento dele:
+Na pasta `flex-plugin` na raiz desse repositório está um plugin do Flex que deve ser implementado para possibilitar que a mídia recebida seja exibida exibida corretamente. Abaixo, você pode ver algumas imagens demonstrando o funcionamento dele:
 
 ![image thumbnail](screenshots/thumbnail.png)
 
 ![image modal](screenshots/modal.png)
 
-![send media buttons](screenshots/sendMediaButtons.png)
+![send media buttons](screenshots/sendFileButton.png)
 
 Realizar o deploy desse plugin é bem simples: entre no diretório `flex-plugin` e instale as dependências:
 
@@ -212,14 +174,11 @@ Realizar o deploy desse plugin é bem simples: entre no diretório `flex-plugin`
 $ npm i
 ```
 
-Depois disso, crie um arquivo `.env.production` com base no `.env.example`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina:
+Depois disso, crie um arquivo `.env.production` com base no `.env.example`, e preencha o único parâmetro com o domínio das funções:
 
 ```javascript
 REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
-REACT_APP_UPLOAD_SERVICE_ENDPOINT=https://your_upload_endpoint/path/to/upload
 ```
-
-> Caso você queira realizar o deploy do plugin em sua conta, você vai precisar usar o ngrok para apontar o `UPLOAD_SERVICE_ENDPOINT` para seu servidor local ou subir um servidor de testes na nuvem. Caso você não queira implementar nenhuma das duas opções, você pode ignorar esse parâmetro e testar o envio de mídia somente com os botões de exemplo com URL fixas.
 
 Após você ter feito isso, copie o arquivo `appConfig.example.js` dentro da pasta `flex-plugin/public` e crie um arquivo chamado `appConfig.js`. Defina o valor da variável `accountSid` como o **ACCOUNT_SID**:
 
@@ -306,7 +265,7 @@ Assim, uma URL será gerada para rotear conexões http para o seu localhost na p
 
 ![proxy-callback](screenshots/proxy-callback.png)
 
-No plugin do Flex, você pode definir para chamar a função `send-media-message` no localhost modificando o arquivo `flex-plugin/src/env.js`. As instruções para rodar o plugin em sua máquina estão descritas abaixo.
+No plugin do Flex, você pode definir para chamar a função `send-media-message` no localhost modificando o arquivo `flex-plugin/.env`. As instruções para rodar o plugin em sua máquina estão descritas abaixo.
 
 ### Rodando o Plugin do Flex em sua própria máquina
 
@@ -316,11 +275,10 @@ Para testar rapidamente esse plugin rodando uma instância do Flex local, primei
 $ npm i
 ```
 
-Crie um arquivo `.env`, diferente do de produção, com base no `.env.example`, e preencha o parâmetro com o domínio das funções e do endpoint de upload para subir mídias diretamente da máquina. (Caso você também esteja rodando as funções em seu ambiente local e o serviço de upload, especificar o domínio como localhost ou a URL do ngrok):
+Crie um arquivo `.env`, diferente do de produção, com base no `.env.example`, e preencha o único parâmetro com o domínio das funções. Caso você também esteja rodando as funções em seu ambiente local, especificar o domínio como localhost ou a URL do ngrok:
 
 ```javascript
 REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
-REACT_APP_UPLOAD_SERVICE_ENDPOINT=https://your_upload_endpoint/path/to/upload
 ```
 
 > É recomendado que você tenha o arquivo `.env` para realizar testes locais e o `.env.production` para ser usado na hora do deploy. Quando você rodar o comando `npm run deploy`, o arquivo env de produção vai ser usado no lugar do `.env` padrão.

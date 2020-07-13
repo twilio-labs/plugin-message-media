@@ -3,9 +3,9 @@ import { VERSION } from '@twilio/flex-ui';
 import { FlexPlugin } from 'flex-plugin';
 
 import reducers, { namespace } from './states';
-import MessageImageComponent from "./MessageImageComponent";
-import ImageModal from "./ImageModal";
-import SendMediaComponent from './SendMediaComponent';
+import BubbleMessageWrapper from "./components/BuubleMessageWrapper/BubbleMessageWrapper";
+import ImageModal from "./components/ImageModal/ImageModal";
+import SendMediaComponent from './components/SendMediaComponent/SendMediaComponent';
 
 const PLUGIN_NAME = 'SmsMediaPlugin';
 
@@ -24,22 +24,23 @@ export default class SmsMediaPlugin extends FlexPlugin {
   init(flex, manager) {
     this.registerReducers(manager);
 
-    flex.Actions.registerAction("smsModalControl", (payload, abort) => {
+    flex.Actions.registerAction("smsModalControl", (payload) => {
       var event = new Event("smsModalControlOpen");
       event.url = payload.url;
       document.dispatchEvent(event);
-      return new Promise((resolve, reject) => {
-        resolve();
-      });
+      return Promise.resolve();
     });
 
-    flex.MessageBubble.Content.add(<MessageImageComponent key="image" />);
+    flex.MessageBubble.Content.add(<BubbleMessageWrapper key="image" />);
 
     flex.MainContainer.Content.add(<ImageModal key="imageModal" />, {
       sortOrder: 1
     });
 
     flex.MessageInput.Content.add(<SendMediaComponent key="sendMedia" manager={manager}/>);
+
+    // ignore "media not supported" errors
+    manager.strings.MediaMessageError = '';
   }
 
   /**
