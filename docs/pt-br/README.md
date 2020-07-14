@@ -25,6 +25,9 @@ Em qualquer uma das opções que você escolher, as seguintes variáveis de ambi
 * **TWILIO_WHATSAPP_NUMBER**
     * O número do WhatsApp que será usado para enviar mensagens à um destinatário do WhatsApp.
     * Você pode encontrar essa informação na página do [WhatsApp Learn](https://www.twilio.com/console/sms/whatsapp/learn) se você estiver usando um número de testes ou na página do [WhatsApp Senders](https://www.twilio.com/console/sms/whatsapp/senders) se você já habilitou o uso de números personalizados. O número deve seguir o formato `+1122333334444` (com o código do país e o DDD seguido pelo número)
+* **TWILIO_SMS_NUMBER**
+    * O número que será usado para enviar mensagens à um destinatário por MMS.
+    * Você pode usar o mesmo número do WhatsApp caso você já tenha habilitado um número personalizado com capacidade de enviar SMS. Caso o contrário, você pode usar algum outro número da Twilio para realizar o envio de mídias por SMS. Você pode gerenciar seus números no [Dashboard de números ativos da Twilio](https://www.twilio.com/console/phone-numbers/incoming). O número deve seguir o formato `+1122333334444` (com o código do país e o DDD seguido pelo número)
 
 ## Opção 1: Copiando o código para a interface do Twilio Functions
 
@@ -117,6 +120,7 @@ AUTH_TOKEN=0000000000000000000000000000000000000
 CHAT_SERVICE_SID=IS00000000000000000000000000000
 PROXY_SERVICE=KS00000000000000000000000000000000
 TWILIO_WHATSAPP_NUMBER=+14155238886
+TWILIO_SMS_NUMBER=+19999999999
 ```
 
 Depois de preencher todos esses dados, basta realizar o deploy das funções em sua conta:
@@ -310,7 +314,7 @@ var appConfig = {
 
 Finalmente, rode o comando `PORT=8080 npm start`. Isso deve iniciar um servidor na porta 8080 com sua instância local do plugin e abrir o seu browser padrão conectado ao flex. 
 
-> A porta 8080 foi específicada para evitar conflito com as Functions se as mesmas estiverem rodando em um servidor local.
+> A porta 8080 foi especificada para evitar conflito com as Functions se as mesmas estiverem rodando em um servidor local.
 
 ```
 $ npm start

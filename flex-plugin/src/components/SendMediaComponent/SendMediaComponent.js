@@ -3,6 +3,9 @@ import { withTaskContext } from '@twilio/flex-ui';
 import Button from '../Button/Button';
 import { ButtonWrapper } from './SendMediaComponent.Styles';
 
+const smsChannelName = 'chat-sms';
+const whatsappChannelName = 'chat-whatsapp';
+
 class UploadComponent extends React.Component {
   baseFunctionUrl = process.env.REACT_APP_MMS_FUNCTIONS_DOMAIN;
 
@@ -45,10 +48,12 @@ class UploadComponent extends React.Component {
     const { manager, task } = this.props;
     const sendMediaMessageUrl = `${this.baseFunctionUrl}/send-media-message`;
     const { name: to } = task.attributes;
-
+    const { channelDefinition } = this.props;
+   
     const body = {
       mediaUrl,
       to,
+      channel: channelDefinition.name,
       Token: manager.store.getState().flex.session.ssoTokenPayload.token,
     };
 
@@ -80,6 +85,17 @@ class UploadComponent extends React.Component {
   };
 
   render() {
+    const { channelDefinition } = this.props;
+
+    const allowedChannels = [
+      whatsappChannelName,
+      smsChannelName
+    ];
+
+    if (channelDefinition && !allowedChannels.includes(channelDefinition.name)) {
+      return null;
+    }
+
     return (
       <ButtonWrapper>
         <form>
