@@ -2,7 +2,7 @@
 
 Permite que usuários enviem e recebia mídias MMS por SMS/Whatsapp e renderiza dentro da janela de chat do Flex.
 
-# Quickstart
+# Configuração
 
 ## Twilio Functions
 
@@ -50,7 +50,7 @@ Você também vai precisar adicionar as seguintes dependências para as funçõe
 
 ![functions-environment](screenshots/functions-environment.png)
 
-> Copie e cole o nome da dependência `twilio-flex-token-validator` quando você for defini-la. Existe um bug na interface que, se você digitar 'twilio' no nome da dependência, o campo vai travar e você não vai conseguir digitar mais nada nele. :(
+> Copie e cole o nome da dependência `twilio-flex-token-validator` quando você for defini-la. Existe um bug na interface que, se você digitar 'twilio' no nome da dependência, o campo vai travar e você não vai conseguir digitar mais nada nele.
 
 Salve as modificações. Depois disso, você está pronto para configurar o Proxy e o Plugin do Flex.
 
@@ -150,7 +150,7 @@ Depois que o deploy for realizado com sucesso, copie e salve o link do seu domí
 
 ## Configurando o Twilio Proxy
 
-Como o Twilio Proxy não suporta mensagens com mídia nativamente, é necessário monitorias essas mensagens para detectar essas mensagens com mídia e só então atualizar os atributos da mensagem com o URL da mídia e seu tipo. Isso é responsabilidade da função `mms-handler`, que o deploy foi realizado anteriormente.
+Como o Twilio Proxy não suporta mensagens com mídia nativamente, é necessário monitorar essas mensagens para detectar essas mensagens com mídia e só então atualizar os atributos da mensagem com o URL da mídia e seu tipo. Isso é responsabilidade da função `mms-handler`, que o deploy foi realizado anteriormente.
 
 Agora, você precisa configurar o URL do Proxy Callback para o endpoint dessa função.
 
@@ -209,7 +209,7 @@ var appConfig = {
 };
 ```
 
-Por último, rode o comando `npm deploy`. Recomendo que ao rodar o comando pela primeira vez você defina o accountSid e o authToken da sua conta do flex da seguinte maneira: 
+Por último, rode o comando `npm run deploy`. Recomendo que ao rodar o comando pela primeira vez você defina o accountSid e o authToken da sua conta do flex da seguinte maneira: 
 
 ```
 TWILIO_ACCOUNT_SID=AC0000000 TWILIO_AUTH_TOKEN=00000000000 npm run deploy
@@ -233,7 +233,7 @@ $ npm i
 
 Depois disso, use o Serverless Toolkit para inicializar suas funções:
 
-```
+```zsh
 $ twilio serverless:start
 
 ┌────────────────────────────────────────────────────────────────────────┐
