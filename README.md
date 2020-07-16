@@ -38,8 +38,7 @@ In both ways, you need to define the following environment variables:
 
 ## 1st Option: Copying and paste the Functions code to Twilio's Interface
 
-Copying the code of the Functions can be the fastest way to get started. However, if you want to debug the code and try some changes in your local machine, take a look at [how to deploy the Functions using the Serverless Toolkit]().
-
+Copying the code of the Functions can be the fastest way to get started. However, if you want to debug the code and try some changes in your local machine, take a look at [how to deploy the Functions using the Serverless Toolkit](#2nd-option-:Using-the-Serverless-Toolkit-to-deploy-the-Functions).
 In the [Functions Dashboard](https://www.twilio.com/console/functions/manage), you have to create two new functions: One named `MMS Handler` and another named `Send Media Message`. Define the path of these two functions as `/mms-handler` and `/send-media-message`, respectively. Copy the code of each function that exists inside the directory `twilio-functions/functions` and paste it in your respective Function in the interface.
 
 ![functions-interface](screenshots/functions-interface.png)
