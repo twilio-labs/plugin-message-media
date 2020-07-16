@@ -171,7 +171,7 @@ In the `flex-plugin` directory on this repo exists a Flex Plugin that allows the
 
 ![image modal](screenshots/modal.png)
 
-![send media buttons](screenshots/sendMediaButtons.png)
+![send media buttons](screenshots/sendFileButton.png)
 
 Performing the deploy of this plugin into your Flex instance is quite simple: Go to the `flex-plugin` directory and install the project dependencies:
 
