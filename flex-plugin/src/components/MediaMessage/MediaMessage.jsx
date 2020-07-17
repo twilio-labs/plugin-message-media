@@ -37,7 +37,7 @@ class MediaMessageComponent extends Component {
         <audio controls>
           <source src={mediaUrl} type={mediaType} />
         </audio>
-        <a href={mediaUrl} target='_blank'>
+        <a href={mediaUrl} target='_blank' rel='noopener noreferrer'>
           Full Size Player
         </a>
       </AudioPlayerWrapper>
@@ -50,7 +50,7 @@ class MediaMessageComponent extends Component {
     return (
       <PdfViewerWrapper>
         <iframe title='PDF Preview' src={mediaUrl} width='100%' />
-        <a href={mediaUrl} target='_blank'>
+        <a href={mediaUrl} target='_blank' rel='noopener noreferrer'>
           Full Size Document
         </a>
       </PdfViewerWrapper>
@@ -65,7 +65,7 @@ class MediaMessageComponent extends Component {
         <video width='100%' controls>
           <source src={mediaUrl} type={mediaType} />
         </video>
-        <a href={mediaUrl} target='_blank'>
+        <a href={mediaUrl} target='_blank' rel='noopener noreferrer'>
           Full Size Player
         </a>
       </VideoPlayerWrapper>

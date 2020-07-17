@@ -3,7 +3,7 @@ import { VERSION } from '@twilio/flex-ui';
 import { FlexPlugin } from 'flex-plugin';
 
 import reducers, { namespace } from './states';
-import BubbleMessageWrapper from "./components/BuubleMessageWrapper/BubbleMessageWrapper";
+import BubbleMessageWrapper from "./components/BubbleMessageWrapper/BubbleMessageWrapper";
 import ImageModal from "./components/ImageModal/ImageModal";
 import SendMediaComponent from './components/SendMediaComponent/SendMediaComponent';
 

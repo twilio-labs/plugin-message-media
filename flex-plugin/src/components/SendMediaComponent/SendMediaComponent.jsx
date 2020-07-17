@@ -12,6 +12,7 @@ class UploadComponent extends React.Component {
   constructor(props) {
     super(props);
     this.inputFileRef = React.createRef();
+    this.formFileRef = React.createRef();
   }
 
   onChange = async e => {
@@ -40,6 +41,8 @@ class UploadComponent extends React.Component {
       } catch (error) {
         console.error('Error while sending media', error);
         return;
+      } finally {
+        this.formFileRef.current.reset();
       }
     }
   };
@@ -98,7 +101,7 @@ class UploadComponent extends React.Component {
 
     return (
       <ButtonWrapper>
-        <form>
+        <form ref={this.formFileRef}>
           <input
             ref={this.inputFileRef}
             accept='
