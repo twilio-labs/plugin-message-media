@@ -274,4 +274,61 @@ In the Flex plugin, you can define the `REACT_APP_MMS_FUNCTIONS_DOMAIN` as `loca
 
 ### Running the Flex Plugin in your machine
 
-Coming soon...
+To test this plugin in a local Flex instance, you need to make sure that you are logged in into your [Twilio Account](https://www.twilio.com/login). After that, install the project dependencies inside the `flex-plugin` directory:
+
+```zsh
+$ npm install
+```
+
+Then, create a `.env` file based on the `.env.example` one, and provide the functions' domain to the only variable that exists there. If you are running the functions using the Serverless Toolkit on your machine, you can specify the domain as `localhost` or a domain from ngork:
+
+```javascript
+REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
+```
+
+> I would recommend you to have a `.env` file to test your plugin locally and a `.env.production` one to use when deploying it to your flex instance. When you run the `npm run deploy` command, the production env file is used instead of the `.env`.
+
+After you have done that, copy the file `appConfig.example.js` inside the directory `flex-plugin/public` and create another one named `appConfig.js` in the same directory. Provide your **ACCOUNT_SID** to the `accountSid` variable:
+
+```javascript
+// your account sid
+var accountSid = 'AC000000000000000000000000000000000';
+
+// set to /plugins.json for local dev
+// set to /plugins.local.build.json for testing your build
+// set to "" for the default live plugin loader
+var pluginServiceUrl = '/plugins.json';
+
+var appConfig = {
+  pluginService: {
+    enabled: true,
+    url: pluginServiceUrl,
+  },
+  sso: {
+    accountSid: accountSid
+  },
+  ytica: false,
+  logLevel: 'debug',
+  showSupervisorDesktopView: true,
+};
+```
+
+Finally, run the `PORT=8080 npm start` command. This should start a local server running on the port 8080 with your local instance of the plugin and open your default browser.
+
+> The 8080 port was specified to avoid conflict with the Functions if they are running in a local server as well.
+
+```
+$ npm start
+
+Compiled successfully!
+
+You can now view plugin-sms-media in the browser.
+
+  Local:            http://localhost:8080/
+  On Your Network:  http://192.168.0.2:8080/
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+```
+
+And that is it! Now, you can test your changes in your machine.
