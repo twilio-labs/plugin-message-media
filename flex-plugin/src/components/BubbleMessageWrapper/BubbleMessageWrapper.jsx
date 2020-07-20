@@ -14,7 +14,7 @@ class MessageImageComponent extends Component {
   async componentDidMount() {
     const message = this.props.message.source;
 
-    if (message.media) {
+    if (message && message.media) {
       const mediaUrl = await message.media.getContentUrl();
       this.setState({ mediaUrl });
     }
@@ -22,19 +22,29 @@ class MessageImageComponent extends Component {
 
   render() {
     const message = this.props.message.source;
-    const { media, mediaType } = message.attributes;
 
     // Messages sent by the agent
     if (this.state.mediaUrl) {
       return (
         <BubbleMessageWrapperDiv>
-          <MediaMessageComponent mediaUrl={this.state.mediaUrl} mediaType={message.media && message.media.contentType} />
+          <MediaMessageComponent
+            mediaUrl={this.state.mediaUrl}
+            mediaType={message.media && message.media.contentType}
+          />
         </BubbleMessageWrapperDiv>
       );
-    } else if (media && mediaType) { // incoming messages with media
+    } else if (
+      message.attributes &&
+      message.attributes.media &&
+      message.attributes.mediaType
+    ) {
+      // incoming messages with media
       return (
         <BubbleMessageWrapperDiv>
-         <MediaMessageComponent mediaUrl={media} mediaType={mediaType} />
+          <MediaMessageComponent
+            mediaUrl={message.attributes.media}
+            mediaType={message.attributes.mediaType}
+          />
         </BubbleMessageWrapperDiv>
       );
     }
