@@ -4,6 +4,8 @@ import { BubbleMessageWrapperDiv } from './BubbleMessageWrapper.Styles';
 import MediaMessageComponent from '../MediaMessage/MediaMessage';
 
 class MessageImageComponent extends Component {
+  enabledChannels = ["sms", "whatsapp"];
+
   constructor(props) {
     super(props);
     this.state = {
@@ -13,8 +15,9 @@ class MessageImageComponent extends Component {
 
   async componentDidMount() {
     const message = this.props.message.source;
+    const { channel } = message;
 
-    if (message && message.media) {
+    if (this.enabledChannels.includes(channel.attributes.channel_type) && message.media) {
       const mediaUrl = await message.media.getContentUrl();
       this.setState({ mediaUrl });
     }
@@ -22,6 +25,11 @@ class MessageImageComponent extends Component {
 
   render() {
     const message = this.props.message.source;
+    const { channel } = message;
+
+    if (channel.attributes && !this.enabledChannels.includes(channel.attributes.channel_type)) {
+      return <div/>
+    }
 
     // Messages sent by the agent
     if (this.state.mediaUrl) {
