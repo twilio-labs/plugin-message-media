@@ -81,6 +81,7 @@ class MediaMessageComponent extends Component {
         return this.renderImage();
       case 'audio/mpeg':
       case 'audio/ogg':
+      case 'audio/amr':
         return this.renderAudioPlayer();
       case 'application/pdf':
         return this.renderPdfViewer();
