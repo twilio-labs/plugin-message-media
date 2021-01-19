@@ -4,15 +4,18 @@ const getApiUtils = (context) => {
   const client = context.getTwilioClient();
 
   return {
-    fetchSubresourcesList: async (messageSid) => {
-      try {
-        return await client
-          .messages(messageSid)
-          .media.list({ limit: 1 });
-      } catch (err) {
-        throw new VError(err, "error while fetching message's subResources list");
+    fetchSubresourcesList: async (messageSid, retry = 3) => {
+      for (let i = 0; i <= retry; i++) {
+          console.log('MESSAGE SID =>', messageSid);
+          const mediaMessage = await client.messages(messageSid).media.list({ limit: 1 });
+          if (mediaMessage.length > 0) {
+              return mediaMessage;
+          } else {
+              console.log("Message is a MMS, but it doesn't have any media attached.", ` retry = ${i}`);
+          }
+          await waitFor(1000);
       }
-    },
+  },
     fetchSession: async (sessionSid) => {
       try {
         return await client.proxy
