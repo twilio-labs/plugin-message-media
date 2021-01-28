@@ -1,4 +1,5 @@
 const VError = require('verror');
+const waitFor = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 const getApiUtils = (context) => {
   const client = context.getTwilioClient();
