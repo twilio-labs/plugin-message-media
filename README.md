@@ -173,7 +173,7 @@ In the `flex-plugin` directory on this repo exists a Flex Plugin that allows the
 
 ![send media buttons](screenshots/sendFileButton.png)
 
-Performing the deploy of this plugin into your Flex instance is quite simple: Go to the `flex-plugin` directory and install the project dependencies:
+Performing the deploy of this plugin into your Flex instance is quite simple: Go to the `plugin-message-media` directory and install the project dependencies:
 
 ```zsh
 $ npm i
@@ -185,7 +185,7 @@ After that, create a `.env.production` file based on the `.env.example`, and pro
 REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
 ```
 
-After you have done that, copy the file `appConfig.example.js` inside the directory `flex-plugin/public` and create another one named `appConfig.js` in the same directory. Provide your **ACCOUNT_SID** to the `accountSid` variable:
+After you have done that, copy the file `appConfig.example.js` inside the directory `plugin-message-media/public` and create another one named `appConfig.js` in the same directory. Provide your **ACCOUNT_SID** to the `accountSid` variable:
 
 ```javascript
 // your account sid
@@ -210,10 +210,12 @@ var appConfig = {
 };
 ```
 
-At last, run the `npm run deploy` command. I would recommend you to provide your accountSid and authToken when you run this command for the first time, as in the example below:
+Check if you are logged in to [Twilio CLI](https://github.com/LucasFrezarini/mms2FlexChat#twilio-cli-setup)
+
+At last, run the `twilio flex:plugins:deploy` command. For more details about this command read the [Twilio Flex plugin CLI documentation](https://www.twilio.com/docs/flex/developer/plugins/cli)
 
 ```zsh
-TWILIO_ACCOUNT_SID=AC0000000 TWILIO_AUTH_TOKEN=00000000000 npm run deploy
+twilio flex:plugins:deploy --major --changelog "Notes for this version" --description "Functionality of the plugin"
 ```
 
 Like that, if you have already made a deploy of a Flex Plugin to an account that is not the one that you are using now, you make sure that this deploy will be made to the account with the SID provided. You do not need to provide these variables in the next deploys since either this account will be used as the default one or the CLI will ask you to choose the account that you wish to deploy to.
@@ -274,7 +276,7 @@ In the Flex plugin, you can define the `REACT_APP_MMS_FUNCTIONS_DOMAIN` as `loca
 
 ### Running the Flex Plugin in your machine
 
-To test this plugin in a local Flex instance, you need to make sure that you are logged in into your [Twilio Account](https://www.twilio.com/login). After that, install the project dependencies inside the `flex-plugin` directory:
+To test this plugin in a local Flex instance, you need to make sure that you are logged in into your [Twilio Account](https://www.twilio.com/login). After that, install the project dependencies inside the `plugin-message-media` directory:
 
 ```zsh
 $ npm install
@@ -286,9 +288,9 @@ Then, create a `.env` file based on the `.env.example` one, and provide the func
 REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
 ```
 
-> I would recommend you to have a `.env` file to test your plugin locally and a `.env.production` one to use when deploying it to your flex instance. When you run the `npm run deploy` command, the production env file is used instead of the `.env`.
+> I would recommend you to have a `.env` file to test your plugin locally and a `.env.production` one to use when deploying it to your flex instance. When you run the `twilio flex:plugins:deploy` command, the production env file is used instead of the `.env`.
 
-After you have done that, copy the file `appConfig.example.js` inside the directory `flex-plugin/public` and create another one named `appConfig.js` in the same directory. Provide your **ACCOUNT_SID** to the `accountSid` variable:
+After you have done that, copy the file `appConfig.example.js` inside the directory `plugin-message-media/public` and create another one named `appConfig.js` in the same directory. Provide your **ACCOUNT_SID** to the `accountSid` variable:
 
 ```javascript
 // your account sid
@@ -313,22 +315,28 @@ var appConfig = {
 };
 ```
 
-Finally, run the `PORT=8080 npm start` command. This should start a local server running on the port 8080 with your local instance of the plugin and open your default browser.
+Finally, run the `twilio flex:plugins:start` command. This should start a local server running on the port 8080 with your local instance of the plugin and open your default browser.
 
 > The 8080 port was specified to avoid conflict with the Functions if they are running in a local server as well.
 
 ```
-$ npm start
+$ twilio flex:plugins:start
 
 Compiled successfully!
 
-You can now view plugin-sms-media in the browser.
+Your plugin app is running in the browser on:
 
-  Local:            http://localhost:8080/
-  On Your Network:  http://192.168.0.2:8080/
+	Local        http://localhost:3000/
+	Network      http://192.168.15.99:3000/
 
-Note that the development build is not optimized.
-To create a production build, use npm run build.
+Local Plugins:
+
+	plugin-message-media      /Users/viniciusmiguel/Documents/GitHub/mms2FlexChat/plugin-message-media
+
+This is a development build and is not intended to be used for production.
+To create a production build, use:
+
+	 twilio flex:plugins:build
 ```
 
 And that is it! Now, you can test your changes in your machine.
