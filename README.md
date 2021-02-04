@@ -345,3 +345,11 @@ To create a production build, use:
 ```
 
 And that is it! Now, you can test your changes in your machine.
+
+## Contributing
+
+Check out [CONTRIBUTING](CONTRIBUTING.md) for more information on how to contribute to this project.
+
+## License
+
+MIT © Twilio Inc.
