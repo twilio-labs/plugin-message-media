@@ -4,6 +4,11 @@ Allows end-users to send in MMS media over SMS and render within Flex Chat windo
 
 Looking for your Flex Chat Window render MMS media into your Flex Chat UI?
 
+This plugin was based on this [repository](https://github.com/jprix/mms2FlexChat), thanks for the contribution 
+* [jprix](https://github.com/jprix)
+* [Terence Rogers](https://github.com/trogers-twilio)
+* [Brad McAllister](https://github.com/bdm1981)
+
 # Documentation
 
 Below, you can see the original documentation for this repository. There is also a detailed one in Portuguese, and sooner it will be translated to English as well.
