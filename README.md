@@ -1,4 +1,4 @@
-# mms2FlexChat
+# Plugin message media
 
 Allows end-users to send in MMS media over SMS and render within Flex Chat window.
 
@@ -159,7 +159,7 @@ We now need to configure the Proxy Callback URL to point to that Function.
 1) Navigate to the [Proxy Dashboard](https://www.twilio.com/console/proxy) and click on the Proxy Service used by your MMS and WhatsApp numbers
 
 2) In the Callback URL field, enter the URL to the `mms-handler` Function. If the deploy was made using the serverless toolkit, paste the `mms-handler` URL provided in the deploy command output. Otherwise, you can get that URL by going to the [Twilio Functions](https://www.twilio.com/console/functions/manage) page, selecting the `MMS Handler` Function and clicking the Copy button next to the Path.
-![image thumbnail](https://raw.githubusercontent.com/jprix/mms2FlexChat/master/screenshots/proxy-callback.png)
+![image thumbnail](screenshots/proxy-callback.png)
 
 3) Click Save at the bottom of the Proxy Configuration page once you've entered the Callback URL.
 
@@ -210,7 +210,7 @@ var appConfig = {
 };
 ```
 
-Check if you are logged in to [Twilio CLI](https://github.com/LucasFrezarini/mms2FlexChat#twilio-cli-setup)
+Check if you are logged in to [Twilio CLI](https://github.com/twilio-labs/plugin-message-media#twilio-cli-setup)
 
 At last, run the `twilio flex:plugins:deploy` command. For more details about this command read the [Twilio Flex plugin CLI documentation](https://www.twilio.com/docs/flex/developer/plugins/cli)
 
