@@ -6,7 +6,7 @@
 
 The WhatsApp MMS for Flex Webchat plugin allows you to send a media message over WhatsApp and render it within a Flex chat window. Upon sending the message, any qualified agent will see an incoming chat request from a WhatsApp number following the `whatsapp:<E.164-formatted phone number>` format.
 
-## Set up
+## Setup
 
 ### Requirements
 
@@ -24,7 +24,7 @@ To deploy this plugin, you will need:
    twilio plugins:install @twilio-labs/plugin-flex@beta
    ```
    
-   The Twilio CLI with the Serverless and Flex Plugins are recommended for local development and debugging purposes, but you have the option to use the Functions UI in the Twilio Console.
+   * The Twilio CLI with the Serverless and Flex Plugins are recommended for local development and debugging purposes, but you have the option to use the Functions UI in the Twilio Console.
 
 
 ### Twilio Account Settings
@@ -40,7 +40,7 @@ all the config values we need to run the plugin on your Flex application:
 | Twilio WhatsApp Number | The WhatsApp number to use when sending messages to a WhatsApp recipient. You can find this either on the [Twilio Sandbox for WhatsApp page](https://www.twilio.com/console/sms/whatsapp/learn) if you're using a test number, or the [WhatsApp Senders](https://www.twilio.com/console/sms/whatsapp/senders) if you've enabled personalized WhatsApp numbers.                                  |
 | Twilio SMS Number | A Twilio phone number with MMS capability. You can check your numbers in the [Phone Numbers Dashboard](https://www.twilio.com/console/phone-numbers/incoming). |
 
-## Plugin details
+## Plugin Details
 
 Twilio Proxy does not support media messages natively, so it is necessary to monitor Proxy messages to detect media messages and then update the Flex Chat Channel message attributes with the media URL and media type. To facilitate sending MMS via WhatsApp and rendering the media on the Flex Chat UI, we have added the following Twilio Functions:
 
@@ -48,117 +48,80 @@ Twilio Proxy does not support media messages natively, so it is necessary to mon
 
 2) **send-media-message.js**: This Twilio Function is called by the Flex plugin to send the media to the recipient using the Programmable Messaging API. Since Proxy does not currently support media messages, we have to bypass it and call the Programmable Messaging API directly.
 
-You can upload these functions to your Twilio account in two ways: deploying via the Twilio CLI or copying and pasting the Functions code into the [Functions UI](https://www.twilio.com/console/functions/manage) within the Console. Make sure to set the environment variables and package dependencies regardless of which method you use.
-
-### Local development
+## Local Development
 
 After the above requirements have been met:
 
-1. Clone this repository
+1. Clone this repository: `git clone https://github.com/twilio-labs/plugin-message-media.git`
+1. Set your Functions [environment variables](#twilio-account-settings), install your package dependencies, and deploy your Twilio Functions.
+1. Set your plugin environment variable with the value of your Twilio Functions domain.   
+1. Copy `public/appConfig.example.js` to `public/appConfig.js`.
+1. Install plugin dependencies: `npm install`
 
+To test the plugin locally, run the following command:
+
+  ```bash
+npm run start
 ```
-git clone https://github.com/twilio-labs/plugin-message-media.git
-```
-
-2. Change into the `public` subdirectory of the repo and run the following:
-
-```
-cd plugin-queued-callbacks-and-voicemail/public && mv appConfig.example.js appConfig.js
-```
-
-3. Open **appConfig.js** with your text editor and update the accountSid variable with your account SID:
-
-```
-var accountSid = 'ACXXXXX'
-```
-
-4. Install dependencies
-
-```bash
-npm install
-```
-
-5. [Deploy your Twilio Functions and Assets](#twilio-serverless-deployment) 
-
-6. Set your environment variables
-
-```bash
-npm run setup
-```
-
-See [Twilio Account Settings](#twilio-account-settings) to locate the necessary environment variables.
-
-4. Run the application
-
-```bash
-npm start
-```
-
 Alternatively, you can use this command to start the server in development mode. It will reload whenever you change any files.
 
 ```bash
 npm run dev
 ```
 
-5. Navigate to [http://localhost:3000](http://localhost:3000)
+> **Note:** We recommend you install the Twilio Flex Plugins CLI. To [start your plugin locally](https://www.twilio.com/docs/flex/quickstart/getting-started-plugin), you can run `twilio flex:plugins:start`.
+
+Navigate to [http://localhost:3000](http://localhost:3000).
 
 That's it!
 
-## Serverless Deployment
+## Functions Deployment
 
-### Twilio CLI Setup
+You can upload these functions to your Twilio account in two ways: deploying via the Twilio CLI or copying and pasting the Functions code into the [Functions UI](https://www.twilio.com/console/functions/manage) within the Console. Make sure to set the environment variables and package dependencies regardless of which method you use.
 
-First of all, clone this repo in your machine. Then, make sure the [twilio-cli](https://www.twilio.com/docs/twilio-cli/quickstart) is installed in your machine. You can check it by typing `twilio` in your terminal:
+### Serverless Toolkit
 
-```zsh
-$ twilio
+#### Install the Twilio CLI and Serverless Plugins
 
-# output: 
+For installation instructions, see the [Requirements](#requirements) list.
 
-unleash the power of Twilio from your command prompt
+**Configure your Flex Workspace**
 
-VERSION
-  twilio-cli/2.3.0 darwin-x64 node-v12.14.1
+In order to use this plugin, you need to prepare your **Flex Task Assignment** workspace.
 
-USAGE
-  $ twilio [COMMAND]
-  [...]
+**Retrieve your Flex settings**
+
+Navigate to your Flex project in the [Twilio Console](https://www.twilio.com/console).  Copy your **ACCOUNT SID** and **AUTH TOKEN**, and create a new Twilio CLI profile using those credentials and activate it.
+
+```
+twilio profiles:create
+You can find your Account SID and Auth Token at https://www.twilio.com/console
+ » Your Auth Token will be used once to create an API Key for future CLI access to your Twilio Account or Subaccount, and then forgotten.
+? The Account SID for your Twilio Account or Subaccount: ACxxx
+? Your Twilio Auth Token for your Twilio Account or Subaccount: [hidden]
+
+? Shorthand identifier for your profile: whatsappmmsforflex
+Created API Key SKxxx and stored the secret in your keychain.
+Saved whatsappmmsforflex.
+
+twilio profiles:use whatsappmmsforflex
 ```
 
-If it is not installed, follow [this quickstart](https://www.twilio.com/docs/twilio-cli/quickstart) to install it.
+Keep in mind that this account will be used for the rest of the deployment. In order to switch accounts, use the command `twilio profiles:use <different_profile>`.
 
-After that, run the `twilio profiles:list` command and check if the active account is the one that you want to use for sending and receiving media:
-
-```zsh
-$ twilio profiles:list
-
-ID               Account SID                         Active
-flex-whatsapp    AC00000000000000000000000000000000  true  
-other-account    AC00000000000000000000000000000000        
-not-this-one     AC00000000000000000000000000000000         
+Retrieve your **Flex Task Assignment** workspace ID:
+```
+twilio api:taskrouter:v1:workspaces:list
 ```
 
-If your Flex account is in the list but is not the active one, you can switch to it using the command `twilio profiles:use <YOUR-FLEX-ACCOUNT-ID>`.
+**Example Workspace SID**
 
-If this is the first time you are using the `twilio-cli` or if your Flex account is not on the list, you should run the `twilio login` command and provide your **ACCOUNT_SID** and your **AUTH_TOKEN**.
-
-### Installing the Serverless plugin and deploying the Functions
-
-In the case that the `twilio-cli` was already installed in your machine, verify if the [serverless plugin](https://www.twilio.com/docs/labs/serverless-toolkit/getting-started#install-the-twilio-serverless-toolkit) is installed as well:
-
-```zsh
-$ twilio plugins
-@twilio-labs/plugin-rtc 0.1.6
-@twilio-labs/plugin-serverless 1.1.1 # Serverless Plugin
+```
+ SID                             Friendly Name               Prioritize Queue Order
+WSxxxx                           Flex Task Assignment        FIFO    
 ```
 
-If it is not in the list, run the following command to install it:
-
-```zsh
-$ twilio plugins:install @twilio-labs/plugin-serverless
-```
-
-Inside the folder `twilio-functions` of this repository, copy the `.env.example` and create a `.env` file. Fill it with the pieces of information defined in the example file. Check the previous description of the environment variables if you need more details about them.
+Inside the folder `mms-handler` of this repository, copy the `.env.example` and create a `.env` file.  If you're running Windows, see the Windows Environment Variables section in [this blog post](https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html). For more details on the required values, see [Twilio Account Settings](twilio-account-settings).
 
 ```
 ACCOUNT_SID=AC0000000000000000000000000000000000
@@ -192,88 +155,98 @@ Functions:
 Assets:
 ```
 
-When the deploy process finishes, copy and save the Functions' and the Domain's URL.
-
-### Twilio Serverless deployment
-
-You need to deploy the functions associated with the Callback and Voicemail Flex plugin to your Flex instance. The functions are called from the plugin you will deploy in the next step and integrate with TaskRouter, passing in required attributes to generate the callback and voicemail tasks, depending on the customer selection while listening to the in-queue menu options.
-
-#### Pre-deployment Steps
-
-Step 1: From the root directory of your copy of the source code, change into `public/resources` and rename `.env.example` to `.env`.
-
-```
-cd public/resources && mv .env.example .env
-```
-
-Step 2: Open `.env` with your text editor and modify TWILIO_WORKSPACE_SID with your Flex Task Assignment SID.
-
-```
-TWILIO_WORKSPACE_SID=WSxxxxxxxxxxxxxxxxxxxxxx`
-```
-
-To deploy your Callback and Voicemail functions and assets, run the following:
-
-```
-resources $ twilio serverless:deploy --assets
-
-# Example Output
-Deploying functions & assets to the Twilio Runtime
-Env Variables
-⠇ Creating 4 Functions
-✔ Serverless project successfully deployed
-
-Deployment Details
-Domain: plugin-queued-callbacks-voicemail-functions-2075-dev.twil.io
-Service:
-   plugin-queued-callbacks-voicemail-functions 
-Functions:
-   https://plugin-queued-callbacks-voicemail-functions-2075-dev.twil.io/inqueue-callback
-
-https://plugin-queued-callbacks-voicemail-functions-2075-dev.twil.io/inqueue-utils  
-
-https://plugin-queued-callbacks-voicemail-functions-2075-dev.twil.io/queue-menu
-   https://plugin-queued-callbacks-voicemail-functions-2075-dev.twil.io/inqueue-voicemail
-
-Assets:
-   https://plugin-queued-callbacks-voicemail-functions-2075-dev.twil.io/assets/alertTone.mp3
-   https://plugin-queued-callbacks-voicemail-functions-2075-dev.twil.io/assets/guitar_music.mp3
-```
-
-Copy and save the domain returned when you deploy a function. You will need it in the next step. 
+When the deployment finishes, copy and save the Functions' and the Domain's URLs. You will need it in the next step. 
 
 If you forget to copy the domain, you can also find it by navigating to [Functions > API](https://www.twilio.com/console/functions/api) in the Twilio Console.
 
 > Debugging Tip: Pass the -l or logging flag to review deployment logs. For example, you can pass `-l debug` to turn on debugging logs.
 
-### Deploy your Flex Plugin 
+#### Functions UI Deployment
 
-Once you have deployed the function, it is time to deploy the plugin to your Flex instance.
+Copying the code of the Functions can be the fastest way to get started. In the [Functions Dashboard](https://www.twilio.com/console/functions/manage), you have to create two new functions: One named `MMS Handler` and another named `Send Media Message`. Define the path of these two functions as `/mms-handler` and `/send-media-message` respectively. Copy the code of each function that exists inside the directory `mms-handler/functions` and paste it into a Blank Function template in the UI.
 
-Run the following commands in the plugin root directory. We will leverage the Twilio CLI to build and deploy the Plugin.
+![functions-interface](screenshots/functions-interface.png)
 
-- Rename `.env.example` to `.env`.
-- Open `.env` with your text editor and modify the `REACT_APP_SERVICE_BASE_URL` property to the Domain name you copied in the previous step. Make sure to prefix it with "https://".
+Only the Function `mms-handler` should check for Twilio's Signature because it will be called directly by the Proxy service. The `send-media-message` Function needs to be called on the client-side by the Flex instance, so it will verify the Flex token that is passed on the request instead.
 
+Save your changes to both functions. Copy and paste the full paths of both functions into a text file since you will need them later.
+
+After you have added your Functions, go to the [Functions Configuration Page](https://www.twilio.com/console/functions/configure) and ensure "Enable ACCOUNT_SID and AUTH_TOKEN" is checked. In the section "Environment Variables", add the variables described in [Twilio Account Settings](twilio-account-settings).
+
+Also add the following npm Function dependencies:
+
+* twilio-flex-token-validator (1.5.3) -> Validates the Flex Token that will be sent in each request to the `Send Message Function` by the Flex UI.
+* verror (1.10.0) -> Used in the `MMS handler` function to add more details to the errors if something goes wrong.
+
+![functions-environment](screenshots/functions-environment.png)
+
+> When adding the `twilio-flex-token-validator` dependency, make sure to copy and paste it from a clipboard or a text file. There is a bug in the interface that blocks the input when typing 'twilio' in the field and you will be unable to complete the dependency name.
+
+Save your changes. You are now ready to configure the Proxy Service and the Flex Plugin.
+
+## Twilio Proxy Configuration
+
+We now need to configure the Proxy Callback URL to point to that Function.
+
+1. Navigate to the [Proxy Dashboard](https://www.twilio.com/console/proxy) and click on the Proxy Service used by your MMS and WhatsApp numbers.
+
+1. In the Callback URL field, enter the `mms-handler` Function URL. If the deploy was made using the Serverless Toolkit, paste the `mms-handler` URL provided in the deploy command output. Otherwise, you can get that URL by navigating to the [Twilio Functions page](https://www.twilio.com/console/functions/manage), selecting the `MMS Handler` Function, and clicking the Copy button next to the Path.
+![image thumbnail](screenshots/proxy-callback.png)
+
+1. Click **Save** at the bottom of the Proxy Configuration page after entering the Callback URL.
+
+## Flex Plugin Deployment
+
+The WhatsApp MMS for Flex WebChat plugin allows customers to render MMS sent over WhatsApp in the Flex WebChat and allows the agent to send media files to customers from their computer. You can see a demo below of this plugin:
+
+![image thumbnail](screenshots/thumbnail.png)
+
+![image modal](screenshots/modal.png)
+
+![send media buttons](screenshots/sendFileButton.png)
+
+From the plugin root directory, run the following commands:
+
+1. Rename `public/appConfig.example.js` to `public/appConfig.js`.
+1. Install the plugin dependencies.
+
+```zsh
+$ npm i
 ```
-plugin-queued-callbacks-and-voicemail $ mv .env.example .env
 
-# .env
-REACT_APP_SERVICE_BASE_URL=https://plugin-queued-callbacks-voicemail-functions-4135-dev.twil.io
+After that, create `.env.production` based on `.env.example`, and modify the `REACT_APP_MMS_FUNCTIONS_DOMAIN` property to the Domain name of your deployed Functions.
+
+```javascript
+REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
 ```
 
-When you are ready to deploy the plugin, run the following in a command shell:
+Check if you are logged in to the [Twilio CLI](https://github.com/twilio-labs/plugin-message-media#twilio-cli-setup)
 
+At last, run the `twilio flex:plugins:deploy` command. For more details about this command, read the [Twilio Flex plugin CLI documentation](https://www.twilio.com/docs/flex/developer/plugins/cli). 
+
+```zsh
+twilio flex:plugins:deploy --major --changelog "Notes for this version" --description "Functionality of the plugin"
 ```
-plugin-queued-callbacks-and-voicemail $ twilio flex:plugins:deploy --major --changelog "Updating to use the latest Twilio CLI Flex plugin" --description "Queued callbacks and voicemail"
-``` 
 
-To enable the plugin on your contact center, follow the suggested next step on the deployment confirmation. To enable it via the Flex UI, see the [Plugins Dashboard documentation](https://www.twilio.com/docs/flex/developer/plugins/dashboard#stage-plugin-changes).
+Upon successfully deploying your plugin, you should see a suggested next step for enabling it on your Flex application. After running the suggested next step, navigate to the [Plugins Dashboard](https://flex.twilio.com/admin/?_ga=2.33188926.1245483994.1613494659-1672783450.1612487462) to review your recently deployed plugin and confirm that it’s enabled for your contact center.
+
+Now you can open your [Flex instance](https://flex.twilio.com/admin) and test if everything is working as expected!
+
+## Contributing
+
+Check out [CONTRIBUTING](CONTRIBUTING.md) for more information on how to contribute to this project.
+
+## License
+
+MIT © Twilio Inc.
 
 
 ## Credits
 
-
+This plugin was based on the [mms2FlexChat plugin](https://github.com/jprix/mms2FlexChat). Many thanks to the original contributors:
+* [jprix](https://github.com/jprix)
+* [Terence Rogers](https://github.com/trogers-twilio)
+* [Brad McAllister](https://github.com/bdm1981)
 
 ## License
 
