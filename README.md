@@ -1,7 +1,9 @@
 <a  href="https://www.twilio.com">
 <img  src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg"  alt="Twilio"  width="250"  />
 </a>
- 
+
+> **Note:** Detailed documentation is also available in Brazilian Portuguese. To read the instructions in that language, navigate to the `docs/pt-br` subfolder.
+
 # WhatsApp MMS for Flex WebChat
 
 The WhatsApp MMS for Flex Webchat plugin allows you to send a media message over WhatsApp and render it within a Flex chat window. Upon sending the message, any qualified agent will see an incoming chat request from a WhatsApp number following the `whatsapp:<E.164-formatted phone number>` format.
