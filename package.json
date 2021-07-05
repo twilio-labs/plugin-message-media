@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "flex-plugin pre-script-check"
+    "postinstall": "flex-plugin pre-script-check",
+    "start": "flex-plugin start"
   },
   "dependencies": {
     "@material-ui/core": "3.9.4",
