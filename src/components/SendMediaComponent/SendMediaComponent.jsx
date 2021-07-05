@@ -15,10 +15,24 @@ class UploadComponent extends React.Component {
     this.formFileRef = React.createRef();
   }
 
+  handlePaste = (ev) => {
+    if (!ev.clipboardData || !ev.clipboardData.files[0]) {
+      console.log('No file attached');
+      return;
+    }
+
+    this.sendFile(ev.clipboardData.files[0]);
+  }
+
   onChange = async e => {
     const [file = null] = Array.from(e.target.files);
 
     if (file) {
+      await this.sendFile(file);
+    }
+  };
+
+  sendFile = async (file) => {
       try {
         const { name: loggedWorkerName } = this.props.manager.workerClient;
         const channel = await this.retrieveChannel();
@@ -44,12 +58,12 @@ class UploadComponent extends React.Component {
       } finally {
         this.formFileRef.current.reset();
       }
-    }
   };
 
   sendMediaMessage = async (mediaUrl) => {
     const { manager, task } = this.props;
-    const sendMediaMessageUrl = `${this.baseFunctionUrl}/send-media-message`;
+    const sendMediaMessageUrl = `${this.baseFunctionUrl}/send-media-message.js`;
+    console.log('sendMediaMessageUrl', sendMediaMessageUrl);
     const { name: to } = task.attributes;
     const { channelDefinition } = this.props;
    
@@ -86,6 +100,14 @@ class UploadComponent extends React.Component {
       console.error('Error fetching channel by sid.', error);
     }
   };
+
+  componentDidMount() {
+    window.addEventListener('paste', this.handlePaste);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('paste', this.handlePaste);
+  }
 
   render() {
     const { channelDefinition } = this.props;

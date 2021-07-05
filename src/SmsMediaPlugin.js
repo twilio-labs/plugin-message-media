@@ -31,6 +31,9 @@ export default class SmsMediaPlugin extends FlexPlugin {
       return Promise.resolve();
     });
 
+    // Unbind this action of the natively attachments feature (this is under pilot yet).
+    flex.Actions.replaceAction('AttachFile', (payload) => { return; });
+
     flex.MessageBubble.Content.add(<BubbleMessageWrapper key="image" />);
 
     flex.MainContainer.Content.add(<ImageModal key="imageModal" />, {
