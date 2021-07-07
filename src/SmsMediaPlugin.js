@@ -4,6 +4,7 @@ import { FlexPlugin } from 'flex-plugin';
 
 import reducers, { namespace } from './states';
 import BubbleMessageWrapper from "./components/BubbleMessageWrapper/BubbleMessageWrapper";
+import DragAndDrop from './components/DragAndDrop/DragAndDrop';
 import ImageModal from "./components/ImageModal/ImageModal";
 import SendMediaComponent from './components/SendMediaComponent/SendMediaComponent';
 
@@ -38,6 +39,10 @@ export default class SmsMediaPlugin extends FlexPlugin {
 
     flex.MainContainer.Content.add(<ImageModal key="imageModal" />, {
       sortOrder: 1
+    });
+
+    flex.MessagingCanvas.Content.add(<DragAndDrop key="dragndrop"/>, { 
+      sortOrder: -1 
     });
 
     flex.MessageInput.Content.add(<SendMediaComponent key="sendMedia" manager={manager}/>);
