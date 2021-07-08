@@ -6,11 +6,14 @@ import reducers, { namespace } from './states';
 import BubbleMessageWrapper from "./components/BubbleMessageWrapper/BubbleMessageWrapper";
 import DragAndDrop from './components/DragAndDrop/DragAndDrop';
 import ImageModal from "./components/ImageModal/ImageModal";
+import PasteMediaComponent from './components/PasteMediaComponent/PasteMediaComponent';
 import SendMediaComponent from './components/SendMediaComponent/SendMediaComponent';
 
 import SendMediaService from './services/SendMediaService';
 
 const PLUGIN_NAME = 'SmsMediaPlugin';
+
+const ALLOWED_CHANNELS = [ 'chat-sms', 'chat-whatsapp' ];
 
 export default class SmsMediaPlugin extends FlexPlugin {
   constructor() {
@@ -49,7 +52,21 @@ export default class SmsMediaPlugin extends FlexPlugin {
 
     const sendMediaService = new SendMediaService(manager);
 
-    flex.MessageInput.Content.add(<SendMediaComponent key="sendMedia" manager={manager} sendMediaService={sendMediaService} />);
+    flex.MessagingCanvas.Content.add(
+      <PasteMediaComponent
+        key="pasteMedia"
+        allowedChannels={ALLOWED_CHANNELS}
+        sendMediaService={sendMediaService}
+      />
+    );
+    flex.MessageInput.Content.add(
+      <SendMediaComponent 
+        key="sendMedia" 
+        allowedChannels={ALLOWED_CHANNELS} 
+        sendMediaService={sendMediaService} 
+      />
+    );
+    
 
     // ignore "media not supported" errors
     manager.strings.MediaMessageError = '';

@@ -28,7 +28,7 @@ class SendMediaService {
         media: file
       });
     } catch (err) {
-      console.error('Error while sending media', error);
+      console.error('Error while sending media', err);
       return;
     }
   }

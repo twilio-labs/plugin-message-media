@@ -3,25 +3,12 @@ import { withTaskContext } from '@twilio/flex-ui';
 import Button from '../Button/Button';
 import { ButtonWrapper } from './SendMediaComponent.Styles';
 
-const smsChannelName = 'chat-sms';
-const whatsappChannelName = 'chat-whatsapp';
-
 class UploadComponent extends React.Component {
-  baseFunctionUrl = process.env.REACT_APP_MMS_FUNCTIONS_DOMAIN;
 
   constructor(props) {
     super(props);
     this.inputFileRef = React.createRef();
     this.formFileRef = React.createRef();
-  }
-
-  handlePaste = (ev) => {
-    if (!ev.clipboardData || !ev.clipboardData.files[0]) {
-      console.log('No file attached');
-      return;
-    }
-
-    this.sendFile(ev.clipboardData.files[0]);
   }
 
   onChange = async e => {
@@ -33,23 +20,10 @@ class UploadComponent extends React.Component {
     }
   };
 
-  componentDidMount() {
-    window.addEventListener('paste', this.handlePaste);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('paste', this.handlePaste);
-  }
-
   render() {
     const { channelDefinition } = this.props;
 
-    const allowedChannels = [
-      whatsappChannelName,
-      smsChannelName
-    ];
-
-    if (channelDefinition && !allowedChannels.includes(channelDefinition.name)) {
+    if (channelDefinition && !this.props.allowedChannels.includes(channelDefinition.name)) {
       return null;
     }
 
