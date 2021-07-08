@@ -25,79 +25,11 @@ class UploadComponent extends React.Component {
   }
 
   onChange = async e => {
+    const { channelSid, channelDefinition, task } = this.props;
     const [file = null] = Array.from(e.target.files);
 
     if (file) {
-      await this.sendFile(file);
-    }
-  };
-
-  sendFile = async (file) => {
-      try {
-        const { name: loggedWorkerName } = this.props.manager.workerClient;
-        const channel = await this.retrieveChannel();
-
-        // This listener isn't defined to listen to every message on the ComponentDidMount method to avoid 
-        // sending duplicated media when there is more than one tab of Flex open in the user's browser
-        channel.once('messageAdded', async (msg) => {
-          const { media, author } = msg;
-
-          if (author === loggedWorkerName && media) {
-            const mediaUrl = await media.getContentUrl();
-            await this.sendMediaMessage(mediaUrl);
-          }
-        });
-
-        await channel.sendMessage({
-          contentType: file.type,
-          media: file
-        }); 
-      } catch (error) {
-        console.error('Error while sending media', error);
-        return;
-      } finally {
-        this.formFileRef.current.reset();
-      }
-  };
-
-  sendMediaMessage = async (mediaUrl) => {
-    const { manager, task } = this.props;
-    const sendMediaMessageUrl = `${this.baseFunctionUrl}/send-media-message.js`;
-    console.log('sendMediaMessageUrl', sendMediaMessageUrl);
-    const { name: to } = task.attributes;
-    const { channelDefinition } = this.props;
-   
-    const body = {
-      mediaUrl,
-      to,
-      channel: channelDefinition.name,
-      Token: manager.store.getState().flex.session.ssoTokenPayload.token,
-    };
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams(body)
-    };
-
-    try {
-      const response = await fetch(sendMediaMessageUrl, options);
-      const json = await response.json();
-      console.log(`Media message sent to ${to}.`, json);
-    } catch (error) {
-      console.error(`Error sending media message to ${to}.`, error);
-    }
-  };
-
-  retrieveChannel = async () => {
-    const { manager, channelSid } = this.props;
-
-    try {
-      return await manager.chatClient.getChannelBySid(channelSid);
-    } catch (error) {
-      console.error('Error fetching channel by sid.', error);
+      await this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task);
     }
   };
 

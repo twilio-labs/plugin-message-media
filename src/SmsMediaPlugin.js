@@ -8,6 +8,8 @@ import DragAndDrop from './components/DragAndDrop/DragAndDrop';
 import ImageModal from "./components/ImageModal/ImageModal";
 import SendMediaComponent from './components/SendMediaComponent/SendMediaComponent';
 
+import SendMediaService from './services/SendMediaService';
+
 const PLUGIN_NAME = 'SmsMediaPlugin';
 
 export default class SmsMediaPlugin extends FlexPlugin {
@@ -32,7 +34,7 @@ export default class SmsMediaPlugin extends FlexPlugin {
       return Promise.resolve();
     });
 
-    // Unbind this action of the natively attachments feature (this is under pilot yet).
+    // Unbind this action of the native attachments feature (this is under pilot yet).
     flex.Actions.replaceAction('AttachFile', (payload) => { return; });
 
     flex.MessageBubble.Content.add(<BubbleMessageWrapper key="image" />);
@@ -45,7 +47,9 @@ export default class SmsMediaPlugin extends FlexPlugin {
       sortOrder: -1 
     });
 
-    flex.MessageInput.Content.add(<SendMediaComponent key="sendMedia" manager={manager}/>);
+    const sendMediaService = new SendMediaService(manager);
+
+    flex.MessageInput.Content.add(<SendMediaComponent key="sendMedia" manager={manager} sendMediaService={sendMediaService} />);
 
     // ignore "media not supported" errors
     manager.strings.MediaMessageError = '';
