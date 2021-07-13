@@ -2,9 +2,10 @@ import React from 'react';
 import { css } from 'react-emotion';
 import { withTaskContext } from '@twilio/flex-ui';
 
+import DropHereIcon from './DropHereIcon.svg';
 import { DropAreaStyle } from './DropMediaComponent.Style.js';
 
-class DragAndDrop extends React.Component {
+class DropMediaComponent extends React.Component {
 
   dropAreaRef = React.createRef();
 
@@ -92,11 +93,19 @@ class DragAndDrop extends React.Component {
   }
 
   render() {
-    const style = (this.state.dragging) ? DropAreaStyle : null;
+    if (this.state.dragging) {
+      return (
+        <div ref={this.dropAreaRef} className={DropAreaStyle}>
+          <img src={DropHereIcon} alt="Drop files here" />
+          <span>Drop your file here</span>
+        </div>
+      );
+    }
+
     return (
-      <div ref={this.dropAreaRef} className={style}></div>
+      <div ref={this.dropAreaRef}></div>
     );
   }
 }
 
-export default withTaskContext(DragAndDrop);
+export default withTaskContext(DropMediaComponent);
