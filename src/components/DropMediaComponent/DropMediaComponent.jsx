@@ -2,12 +2,14 @@ import React from 'react';
 import { css } from 'react-emotion';
 import { withTaskContext } from '@twilio/flex-ui';
 
-import { DropAreaStyle } from './DragAndDrop.Style.js';
+import { DropAreaStyle } from './DropMediaComponent.Style.js';
 
 class DragAndDrop extends React.Component {
 
   dropAreaRef = React.createRef();
 
+  // this counter is necessary to correctly control the drag enter and leave events
+  // when the cursor hits a sub-component
   counter = 0;
 
   constructor(props) {
@@ -19,8 +21,6 @@ class DragAndDrop extends React.Component {
   }
 
   handleDragEnter = (e) => {
-    console.log('handleDragEnter', e);
-
     if (this.state.dragging === false) {
       this.setState({ dragging: true });
     }
@@ -32,8 +32,6 @@ class DragAndDrop extends React.Component {
   }
 
   handleDragLeave = (e) => {
-    console.log('handleDragLeave', e);
-
     this.counter--;
 
     if (this.counter === 0) {
@@ -45,8 +43,6 @@ class DragAndDrop extends React.Component {
   }
 
   handleDropOnInvalidArea = (e) => {
-    console.log('handleDropOnInvalidArea', e);
-
     this.counter = 0;
     this.setState({ dragging: false });
 
@@ -54,14 +50,27 @@ class DragAndDrop extends React.Component {
     e.stopPropagation();
   }
 
-  handleDropOnDropArea = (e) => {
-    console.log('handleDrop', e);
-
+  handleDropOnDropArea = async (e) => {
     this.counter = 0
     this.setState({ dragging: false });
 
     e.preventDefault();
     e.stopPropagation();
+
+    if (!e.dataTransfer || !e.dataTransfer.files[0]) {
+      console.log('No file dropped');
+      return;
+    }
+
+    const { sid: channelSid, channelDefinition, task } = this.props;
+
+    if (!this.props.allowedChannels.includes(channelDefinition.name)) {
+      console.log('Channel does not supports media');
+      return;
+    }
+
+    const file = e.dataTransfer.files[0];
+    await this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task);
   }
 
   componentDidMount() {

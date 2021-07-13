@@ -4,7 +4,7 @@ import { FlexPlugin } from 'flex-plugin';
 
 import reducers, { namespace } from './states';
 import BubbleMessageWrapper from "./components/BubbleMessageWrapper/BubbleMessageWrapper";
-import DragAndDrop from './components/DragAndDrop/DragAndDrop';
+import DropMediaComponent from './components/DropMediaComponent/DropMediaComponent';
 import ImageModal from "./components/ImageModal/ImageModal";
 import PasteMediaComponent from './components/PasteMediaComponent/PasteMediaComponent';
 import SendMediaComponent from './components/SendMediaComponent/SendMediaComponent';
@@ -46,11 +46,15 @@ export default class SmsMediaPlugin extends FlexPlugin {
       sortOrder: 1
     });
 
-    flex.MessagingCanvas.Content.add(<DragAndDrop key="dragndrop"/>, { 
-      sortOrder: -1 
-    });
-
     const sendMediaService = new SendMediaService(manager);
+
+    flex.MessagingCanvas.Content.add(
+      <DropMediaComponent 
+        key="dropmedia"
+        allowedChannels={ALLOWED_CHANNELS}
+        sendMediaService={sendMediaService}
+      />
+    );
 
     flex.MessagingCanvas.Content.add(
       <PasteMediaComponent
