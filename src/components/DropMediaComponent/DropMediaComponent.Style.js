@@ -1,12 +1,5 @@
 import { css } from 'react-emotion';
 
-const ImageStyle = css`
-  margin: auto;
-  display: block;
-  width: 50%;
-  height: 100%;
-`;
-
 export const DropAreaStyle = css`
   position: absolute;
   top: 0;

@@ -16,8 +16,12 @@ class UploadComponent extends React.Component {
     const [file = null] = Array.from(e.target.files);
 
     if (file) {
-      await this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task);
+      this.props.loading.current.show();
+      return this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task)
+        .then(() => this.props.loading.current.hide());
     }
+
+    return;
   };
 
   render() {

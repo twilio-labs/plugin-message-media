@@ -3,6 +3,7 @@ import { VERSION } from '@twilio/flex-ui';
 import { FlexPlugin } from 'flex-plugin';
 
 import reducers, { namespace } from './states';
+import LoadingComponent from './components/LoadingComponent/LoadingComponent';
 import BubbleMessageWrapper from "./components/BubbleMessageWrapper/BubbleMessageWrapper";
 import DropMediaComponent from './components/DropMediaComponent/DropMediaComponent';
 import ImageModal from "./components/ImageModal/ImageModal";
@@ -46,13 +47,18 @@ export default class SmsMediaPlugin extends FlexPlugin {
       sortOrder: 1
     });
 
+    const loadingRef = React.createRef();
+    const loadingComponent = <LoadingComponent key="mediaLoading" ref={loadingRef}/>;
+
     const sendMediaService = new SendMediaService(manager);
 
+    flex.MessagingCanvas.Content.add(loadingComponent);
     flex.MessagingCanvas.Content.add(
       <DropMediaComponent 
         key="dropmedia"
         allowedChannels={ALLOWED_CHANNELS}
         sendMediaService={sendMediaService}
+        loading={loadingRef}
       />
     );
 
@@ -61,6 +67,7 @@ export default class SmsMediaPlugin extends FlexPlugin {
         key="pasteMedia"
         allowedChannels={ALLOWED_CHANNELS}
         sendMediaService={sendMediaService}
+        loading={loadingRef}
       />
     );
     flex.MessageInput.Content.add(
@@ -68,9 +75,9 @@ export default class SmsMediaPlugin extends FlexPlugin {
         key="sendMedia" 
         allowedChannels={ALLOWED_CHANNELS} 
         sendMediaService={sendMediaService} 
+        loading={loadingRef}
       />
     );
-    
 
     // ignore "media not supported" errors
     manager.strings.MediaMessageError = '';

@@ -17,7 +17,13 @@ class PasteMediaComponent extends React.Component {
     }
 
     const file = e.clipboardData.files[0];
-    await this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task);
+    if (file) {
+      this.props.loading.current.show();
+      return this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task)
+        .then(() => this.props.loading.current.hide());
+    }
+
+    return;
   }
 
   componentDidMount() {

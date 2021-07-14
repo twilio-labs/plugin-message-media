@@ -3,7 +3,7 @@ import { css } from 'react-emotion';
 import { withTaskContext } from '@twilio/flex-ui';
 
 import DropHereIcon from './DropHereIcon.svg';
-import { DropAreaStyle } from './DropMediaComponent.Style.js';
+import { DropAreaStyle } from './DropMediaComponent.Style';
 
 class DropMediaComponent extends React.Component {
 
@@ -71,7 +71,13 @@ class DropMediaComponent extends React.Component {
     }
 
     const file = e.dataTransfer.files[0];
-    await this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task);
+    if (file) {
+      this.props.loading.current.show();
+      return this.props.sendMediaService.sendMedia(file, channelSid, channelDefinition, task)
+        .then(() => this.props.loading.current.hide());
+    }
+
+    return;
   }
 
   componentDidMount() {
