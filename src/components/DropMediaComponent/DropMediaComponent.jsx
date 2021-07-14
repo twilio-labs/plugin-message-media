@@ -17,7 +17,7 @@ class DropMediaComponent extends React.Component {
     super(props);
 
     this.state = {
-      dragging: false
+      dragging: false 
     };
   }
 
@@ -103,7 +103,6 @@ class DropMediaComponent extends React.Component {
       return (
         <div ref={this.dropAreaRef} className={DropAreaStyle}>
           <img src={DropHereIcon} alt="Drop files here" />
-          <span>Drop your file here</span>
         </div>
       );
     }
