@@ -48,11 +48,15 @@ export default class SmsMediaPlugin extends FlexPlugin {
     });
 
     const loadingRef = React.createRef();
-    const loadingComponent = <LoadingComponent key="mediaLoading" ref={loadingRef}/>;
-
     const sendMediaService = new SendMediaService(manager);
 
-    flex.MessagingCanvas.Content.add(loadingComponent);
+    flex.MessagingCanvas.Content.add(
+      <LoadingComponent 
+        key="mediaLoading"
+        ref={loadingRef}
+      />
+    );
+
     flex.MessagingCanvas.Content.add(
       <DropMediaComponent 
         key="dropmedia"
