@@ -12,6 +12,6 @@
     "flex-plugin-scripts": "4.3.19-beta.0"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1"
+    "@twilio/flex-ui": "^1.26.3"
   }
 }
