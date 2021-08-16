@@ -1,17 +1,19 @@
 {
   "name": "plugin-message-media",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
-    "postinstall": "flex-plugin pre-script-check"
+    "postinstall": "flex-plugin pre-script-check",
+    "start": "flex-plugin start"
   },
   "dependencies": {
     "@material-ui/core": "3.9.4",
+    "flex-plugin-scripts": "4.3.19-beta.0",
     "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "flex-plugin-scripts": "4.3.19-beta.0"
+    "react-dom": "16.5.2"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1"
+    "@twilio/flex-ui": "^1",
+    "svg-url-loader": "^7.1.1"
   }
 }
