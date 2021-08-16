@@ -216,10 +216,10 @@ From the plugin root directory, run the following commands:
 $ npm i
 ```
 
-After that, create `.env.production` based on `.env.example`, and modify the `REACT_APP_MMS_FUNCTIONS_DOMAIN` property to the Domain name of your deployed Functions.
+After that, create `.env.production` based on `.env.example`, and modify the `REACT_APP_SEND_MEDIA_ENDPOINT` property to the URL of the send-media-message.js function.
 
 ```javascript
-REACT_APP_MMS_FUNCTIONS_DOMAIN=https://your_functions_domain
+REACT_APP_SEND_MEDIA_ENDPOINT=https://your-functions-domain/send-media-message.js
 ```
 
 Check if you are logged in to the [Twilio CLI](https://github.com/twilio-labs/plugin-message-media#twilio-cli-setup)
