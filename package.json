@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "postinstall": "flex-plugin pre-script-check",
-    "start": "flex-plugin start"
+    "start": "flex-plugin start",
+    "build": "twilio flex:plugins:build",
+    "deploy": "flex-plugin deploy"
   },
   "dependencies": {
     "@material-ui/core": "3.9.4",
