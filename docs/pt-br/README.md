@@ -209,6 +209,8 @@ var appConfig = {
 };
 ```
 
+Em seguida, rode o comando `npm run build`. Para isso, é necessário ter as variáveis de ambiente TWILIO_ACCOUNT_SID e TWILIO_AUTH_TOKEN.
+
 Por último, rode o comando `npm run deploy`. Recomendo que ao rodar o comando pela primeira vez você defina o accountSid e o authToken da sua conta do flex da seguinte maneira: 
 
 ```
