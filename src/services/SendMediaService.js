@@ -7,9 +7,7 @@ class SendMediaService {
 
     async sendMedia(file, channelSid, channelDefinition, task) {
         try {
-            const { name: loggedWorkerName, ...rest } = this.manager.workerClient;
             const channel = await this.manager.chatClient.getChannelBySid(channelSid);
-
             const members = channel.membersEntity.members;
 
             // This listener isn't defined to listen to every message on the ComponentDidMount method to avoid
@@ -35,11 +33,11 @@ class SendMediaService {
     }
 
     async sendMediaMessage(mediaUrl, channelDefinition, task) {
-        const { name: to, ...taskAttr } = task.attributes;
+        const { name: to } = task.attributes;
 
         const body = {
             mediaUrl,
-            to: task.attributes.name,
+            to,
             channel: channelDefinition.name,
             Token: this.manager.store.getState().flex.session.ssoTokenPayload.token,
         };
