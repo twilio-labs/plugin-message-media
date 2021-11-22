@@ -23,7 +23,7 @@ To deploy this plugin, you will need:
    npm install twilio-cli -g
    # Install the Serverless and Flex as Plugins
    twilio plugins:install @twilio-labs/plugin-serverless
-   twilio plugins:install @twilio-labs/plugin-flex@beta
+   twilio plugins:install @twilio-labs/plugin-flex
    ```
    
    * The Twilio CLI with the Serverless and Flex Plugins are recommended for local development and debugging purposes, but you have the option to use the Functions UI in the Twilio Console.
